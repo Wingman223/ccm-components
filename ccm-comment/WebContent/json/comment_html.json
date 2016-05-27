@@ -1,0 +1,32 @@
+{
+  "main":
+  [
+  	{
+  		"tag"	: "section",
+  		"class"	: "comment_main",
+  		"inner"	: [
+  			{
+  				"tag"	: "h1",
+  				"inner"	: "%number% Kommentare"
+  			},
+  			{
+  				"tag"	: "div",
+  				"class"	: "comment_form",
+  				"inner"	: [
+  					{
+  						"tag"	: "textarea",
+				      	"style"	: "width:16rem; height:10rem",
+				      	"rows"	: "2",
+				      	"cols"	: "18",
+				      	"inner"	: "Hello World!"
+				    }
+  				]
+  			},
+  			{
+  				"tag"	: "div",
+  				"class"	: "comment_display"
+  			}
+  		]
+  	}
+  ]
+}

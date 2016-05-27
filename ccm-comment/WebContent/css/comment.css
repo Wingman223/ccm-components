@@ -1,0 +1,14 @@
+/**
+ * @overview styling for ccm comment component
+ * @author Patrick Reif <patrick.reif@inf.h-brs.de>
+ * @copyright Copyright (c) 2016 Bonn-Rhein-Sieg University of Applied Sciences
+ * @license The MIT License (MIT)
+ */
+
+.ccm-comment {
+	margin : 1rem;
+}
+
+.ccm-comment>.main {
+	
+}
