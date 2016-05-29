@@ -106,9 +106,6 @@ ccm.component( {
 	    	
 	    	callback();
 	    }
-	    
-	    // perform callback
-	    callback();
     };
 
     /**
@@ -117,23 +114,168 @@ ccm.component( {
      */
     self.render = function ( callback ) {
     	
-	      var element = ccm.helper.element( self );
-	      
-	      console.log(self);
-	      
-	      ccm.helper.dataset( self, function( dataset ) {
+	      ccm.helper.dataset(self, function( dataset ) {
 	    	  
-	    	  var data = dataset.data;
+	    	  // Data from self.store to display
+	    	  var data 				= dataset.data;
+	    	  // Dynamic components we use for insertion
+	    	  var components		= self.html.component;
+	    	  // Get the main structure and set pointers to the important layout parts
+	    	  var layout 			= self.html.main;
+	    	  var layout_main		= layout[0].inner;
+	    	  var layout_comments	= layout_main[2].inner
+	    		  
+	    	  // the postbox is used in multiple places. So instead of writing it directly
+	    	  // into the layout we insert it dynamically on request
+	    	  // there is the hardcoded one on top and a dynamic one on reply request below
+	    	  // the comment. 
+	    	  // There is a placeholder at the 2nd index. We replace it with the real component
+	    	  //replaceAggregation(layout_main, 1, components["postbox"]);
 	    	  
-	    	  // render main html structure
-	    	  element.html( ccm.helper.html( self.html.main, { number : data.count } ));
+	    	  // render dom so that we gain access to the html elements
+	    	  var main_div = ccm.helper.element( self );
+	    	  main_div.html( ccm.helper.html( self.html.main, { number : data.count } ));
 	    	  
-	    	  console.log(self.html.i18n);
-	    	  console.log(self.html.component);
+	    	  insertPostbox(main_div, 1);
+	    	  
+	    	  // now insert comments
+	    	  var comments_div 	= $(".postbox").first();
+	    	  for( var i=0; i < data.comments.length; i++ ) {
+	    		  // get and convert data to appropriate format
+	    		  var comment 	= data.comments[i];
+	    		  var date		= convertISODateToDate(comment.date);
+	    		  var date_text	= convertDateForOutput(date);
+	    		  
+	    		  // append it to the DOM
+	    		  appendComment(comments_div, comment);
+	    		  
+	    		  // check if there are replies. If yes attach them, too
+	    		  if( comment.replies && comment.replies.length > 0 ) {
+	    			  var followup_div	= comments_div.children(".followup").first();
+	    			  var replies 		= comment.replies;
+	    			  
+	    			  for( var j=0; j<replies.length; j++ ) {
+	    				  
+	    			  }
+	    		  }
+	    	  }
 	    	  
 	    	  // perform callback
 	    	  if ( callback ) callback();
 	    	  
+	    	  // ---------------------------------------------------------------------------
+	    	  // PRIVATE
+	    	  
+	    	  function insertPostbox(element, index) {
+	    		  insertHTML(element, 1, getTemplate("postbox"), data);
+	    	  };
+	    	  
+	    	  function appendComment(element, comment) {
+	    		  
+	    		  // get and convert data to appropriate format
+	    		  var date		= convertISODateToDate(comment.date);
+	    		  var data 		= {
+	    			  name : comment.name,
+		    		  date : convertDateForOutput(date),
+		    		  text : comment.text
+		    	  };
+	    		  
+	    		  appendHTML(element, getTemplate("comment"), data);
+	    	  };
+	    	  
+	    	  // DOM operations
+	    	  // append at the end
+	    	  function appendHTML(element, template, data) {
+	    		  element.append(ccm.helper.html(template, data));
+	    	  };
+	    	  
+	    	  // insert at index
+	    	  // jQuery doesn't support insert at index out of the box
+	    	  // insert at index code from : http://stackoverflow.com/questions/3562493/jquery-insert-div-as-certain-index
+	    	  // autor : Didier Ghys
+	    	  function insertHTML(element, index, template, data) {
+	    		  
+	    		  var lastIndex = element.children().size()
+	    		  if (index < 0) {
+	    		    index = Math.max(0, lastIndex + 1 + index)
+	    		  }
+	    		  element.append(ccm.helper.html(template, data))
+	    		  if (index < lastIndex) {
+	    			  element.children().eq(index).before(element.children().last())
+	    		  }
+	    	  }
+	    	  
+	    	  // get template from json data
+	    	  function getTemplate(name) {
+	    		  return self.html.component[name];
+	    	  }
+	    	  
+	    	  // UTIL: Operations on arrays
+	    	  
+	    	  // calculcates the time difference between the given and current date
+	    	  // outputs a string with an appropriate number between
+	    	  //
+	    	  // Used tutorial : http://stackoverflow.com/questions/17732897/difference-between-two-dates-in-years-months-days-in-javascript
+	    	  // from Rajeev P Nadig
+	    	  function convertDateForOutput(date) {
+	    		  var curr		= new Date();
+	    		  var diff		= new Date(curr - date);
+	    		  
+	    		  var minutes	= diff.getMinutes();
+	    		  var hours		= diff.getHours();
+	    		  var days		= diff.getDate();
+	    		  var months	= diff.getMonth();
+	    		  var years		= diff.toISOString().slice(0, 4) - 1970;
+	    		  
+	    		  if( years > 0 ) {
+	    			  return "vor " + years + " " + ( years > 1 ? "Jahre" : "Jahr" );
+	    		  }
+	    		  else if ( months > 0 ) {
+	    			  return "vor " + months + " " + ( months > 1 ? "Monate" : "Monat"); 
+	    		  }
+	    		  else if ( days > 0 ) {
+	    			  return "vor " + days + " " + ( days > 1 ? "Tage" : "Tag"); 
+	    		  }
+	    		  else if ( hours > 0 ) {
+	    			  return "vor " + hours + " " + ( hours > 1 ? "Stunden" : "Stunde");
+	    		  }
+	    		  else if ( minutes > 2 ) {
+	    			  return "vor " + minutes + " Minuten";
+	    		  }
+	    		  else {
+	    			  return "Gerade eben";
+	    		  }
+	    	  };
+	    	  
+	    	  // Konvertiert ein ISO Datum zu einem regulären DAtum
+	    	  function convertISODateToDate(isodate) {
+	    		  return new Date(isodate);
+	    	  };
+	    	  
+	    	  /*
+	    	  // replace an object in an array with a new one
+	    	  function replaceAggregation(array, index, component) {
+	    		  array[index] = copyObject(component);
+	    	  };
+	    	  
+	    	  // insert a object at index
+	    	  function insertAggregation(array, index, component) {
+	    		  array.splice(index, 0, copyObject(component));
+	    	  };
+	    	  
+	    	  // remove an object at index
+	    	  function removeAggregation(array, index) {
+	    		  array.splice(index, 1);
+	    	  };
+	    	  
+	    	  // Copy object with JSON.parse and JSON.stringify
+	    	  // This is an easy solution and due to the small size of the object no real performance
+	    	  // bottleneck. We coul'd use jQuery.extend or eval() here but jQuery.extend has issues
+	    	  // with copying the whole object and eval() is too dangerous to use. Not worth the effort
+	    	  function copyObject(o) {
+	    		  return JSON.parse(JSON.stringify(o));
+	    	  }
+	    	  */
 	      });
 	};
   }

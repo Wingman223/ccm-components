@@ -57,22 +57,22 @@
 					"tag" : "div",
 					"class" : "meta",
 					"inner" : [{
-							"tag" : "span",
+							"tag" 	: "span",
 							"class" : "header h4",
-							"inner" : "Anonym"
+							"inner" : "%name%"
 						}, {
-							"tag" : "span",
+							"tag" 	: "span",
 							"class" : "spacer",
 							"inner" : "•"
 						}, {
-							"tag" : "span",
-							"inner" : "vor 10 Stunden"
+							"tag" 	: "span",
+							"inner" : "%date%"
 						}
 					]
-				}, {
+				},{
 					"tag" : "div",
 					"class" : "text",
-					"inner" : "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+					"inner" : "%text%"
 				}, {
 					"tag" : "div",
 					"class" : "footer",
@@ -91,13 +91,17 @@
 			]
 		}
 	},
-	"main" : [{
+	"main" : [
+		{
 			"tag" : "section",
-			"inner" : [{
-					"tag" : "div",
+			"inner" : [
+				{
+					"tag" 	: "div",
 					"class" : "header h3",
 					"inner" : "%number% Kommentare"
-				}, {
+				},
+				{ "component"	: "postbox" },
+				{
 					"tag" : "div",
 					"class" : "comments",
 					"inner" : []
