@@ -60,7 +60,21 @@ ccm.component( {
      */
     self.init = function ( callback ) {
     	
-    	// init datastore
+    	// ...
+    	
+    	callback();
+    };
+
+    /**
+     * @summary when <i>ccm</i> instance is ready
+     * @description
+     * Called one-time when this <i>ccm</i> instance and dependent <i>ccm</i> components, instances and datastores are initialized and ready.
+     * This method will be removed by <i>ccm</i> after the one-time call.
+     * @param {function} callback - callback when this instance is ready
+     */
+    self.ready = function ( callback ) {
+
+		// init datastore
 	    self.store.del( self.key, function() {
 	    	
 	    	console.log("data deleted");
@@ -92,21 +106,9 @@ ccm.component( {
 	    	
 	    	callback();
 	    }
-    };
-
-    /**
-     * @summary when <i>ccm</i> instance is ready
-     * @description
-     * Called one-time when this <i>ccm</i> instance and dependent <i>ccm</i> components, instances and datastores are initialized and ready.
-     * This method will be removed by <i>ccm</i> after the one-time call.
-     * @param {function} callback - callback when this instance is ready
-     */
-    self.ready = function ( callback ) {
-
-      // ...
-
-      // perform callback
-      callback();
+	    
+	    // perform callback
+	    callback();
     };
 
     /**
@@ -115,22 +117,25 @@ ccm.component( {
      */
     self.render = function ( callback ) {
     	
-      var element = ccm.helper.element( self );
-      
-      console.log(self);
-      
-      ccm.helper.dataset( self, function ( dataset ) {
-
-        // render main html structure
-        element.html( ccm.helper.html( self.html.main, { number: dataset.number } ) );
-
-        // ...
-
-        // perform callback
-        if ( callback ) callback();
-        
-      });
-    };
+	      var element = ccm.helper.element( self );
+	      
+	      console.log(self);
+	      
+	      ccm.helper.dataset( self, function( dataset ) {
+	    	  
+	    	  var data = dataset.data;
+	    	  
+	    	  // render main html structure
+	    	  element.html( ccm.helper.html( self.html.main, { number : data.count } ));
+	    	  
+	    	  console.log(self.html.i18n);
+	    	  console.log(self.html.component);
+	    	  
+	    	  // perform callback
+	    	  if ( callback ) callback();
+	    	  
+	      });
+	};
   }
 
   /*------------------------------------------------ type definitions ------------------------------------------------*/
