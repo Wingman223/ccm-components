@@ -24,7 +24,9 @@ ccm.component( {
   config: {
 	key		: 'comment'		,
     html	: [ ccm.load	, './json/comment_html.json' ],
-    store	: [ ccm.store	, './json/comment.json' ],
+    //store	: [ ccm.store	, './json/comment.json' ],
+    store	: [ ccm.store	, { url: 'ws://ccm2.inf.h-brs.de/index.js', store: 'comment' }],
+    mock	: [ ccm.load	, './json/comment.json' ],
     style	: [ ccm.load	, './css/comment.css' ]
   },
 
@@ -56,12 +58,40 @@ ccm.component( {
      * This method will be removed by <i>ccm</i> after the one-time call.
      * @param {function} callback - callback when this instance is initialized
      */
-    this.init = function ( callback ) {
-
-      // ...
-
-      // perform callback
-      callback();
+    self.init = function ( callback ) {
+    	
+    	// init datastore
+	    self.store.del( self.key, function() {
+	    	
+	    	console.log("data deleted");
+	    	self.store.get( self.key, function(dataset) {
+	    		
+	    		console.log("got data");
+	    		console.log(dataset);
+	    		
+	    		if( dataset === null ) {
+	    			
+	    			var mockdata = { key : self.key, data : self.mock };
+	    			
+	    			console.log("setting new data");
+	    			console.log(mockdata);
+	    			
+	    			self.store.set(mockdata, proceed);
+	    		} else {
+	    			console.log("data ok");
+	    			proceed(dataset);
+	    		}
+	    	});
+	    });
+	    
+	    // when done call callback
+	    function proceed( dataset2 ) {
+	    	
+	    	console.log("initialized!");
+	    	console.log(dataset2);
+	    	
+	    	callback();
+	    }
     };
 
     /**
@@ -71,7 +101,7 @@ ccm.component( {
      * This method will be removed by <i>ccm</i> after the one-time call.
      * @param {function} callback - callback when this instance is ready
      */
-    this.ready = function ( callback ) {
+    self.ready = function ( callback ) {
 
       // ...
 
@@ -83,15 +113,12 @@ ccm.component( {
      * @summary render content in own website area
      * @param {function} [callback] - callback when content is rendered
      */
-    this.render = function ( callback ) {
-
-      /**
-       * website area for own content
-       * @type {ccm.element}
-       */
+    self.render = function ( callback ) {
+    	
       var element = ccm.helper.element( self );
-
-      // get dataset for rendering
+      
+      console.log(self);
+      
       ccm.helper.dataset( self, function ( dataset ) {
 
         // render main html structure

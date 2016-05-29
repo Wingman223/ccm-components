@@ -1,5 +1,16 @@
 {
-  "comment" : {
-    "number" : 10
-  }
+	"comments" 	: [
+		{
+			"name" 		: "Anonym 1",
+			"date" 		: "2016-05-29T15:58:43.500Z",
+			"text" 		: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+			"replies" 	: [
+				{
+					"name" 		: "Anonym 2",
+					"date" 		: "2016-05-29T16:00:43.500Z",
+					"text" 		: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+				}
+			]
+		}
+	]
 }

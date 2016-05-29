@@ -1,174 +1,108 @@
 {
-  "main":
-  [
-  	{
-  		"tag"	: "section",
-  		"inner"	: [
-  			{
-  				"tag"	: "div",
-  				"class"	: "header h3",
-  				"inner"	: "%number% Kommentare"
-  			},
-  			{
-  				"tag"	: "div",
-  				"class"	: "postbox",
-  				"inner"	: [
-  					{
-  						"tag"				: "div",
-  						"class"				: "textarea placeholder",
-  						"contenteditable"	: "true",
-				      	"rows"				: "2",
-				      	"cols"				: "18",
-				      	"inner"				: "Kommentar hier eintippen (mindestens 3 Zeichen)"
-				    },
-				    {
-				    	
-				    	"tag"				: "section",
-				    	"class"				: "form-submit",
-				    	"inner"				: [
-				    		{
-				    			"tag"	: "p",
-				    			"class"	: "test2",
-				    			"inner"	: [
-				    				{
-				    					"tag" 	: "input",
-				    					"type"	: "submit",
-				    					"class"	: "submit-button",
-				    					"inner"	: "Abschicken"
-				    				}
-				    			]
-				    		},
-				    		{
-				    			"tag"	: "p",
-				    			"inner"	: [
-				    				{
-				    					"tag"	 	: "label",
-					    				"inner"		: [
-						    				{
-						    					"tag" 		: "input",
-						    					"type"		: "checkbox",
-						    					"name"		: "anonymous"
-						    				},
-						    				{
-		                      					"tag"		: "span",
-		                      					"inner"		: "&nbsp;"
-						    				},
-						    				{
-						    					"tag"		: "span",
-						    					"inner"		: "Anonym"
-						    				}
-					    				]
-				    				}
-				    			]
-				    		}
-				    	]
-				    }
-  				]
-  			},
-  			{
-  				"tag"	: "div",
-  				"class"	: "comments",
-  				"inner"	: [
-  					{
-  						"tag" 	: "div",
-  						"class" : "comment",
-  						"inner"	: [
-  							{
-  								"tag" 	: "div",
-  								"class" : "meta",
-  								"inner"	: [
-  									{
-  										"tag" 	: "span",
-  										"class" : "header h4",
-  										"inner"	: "Anonym"
-  									},
-  									{
-  										"tag"	: "span",
-  										"class"	: "spacer",
-  										"inner"	: "•"
-  									},
-  									{
-  										"tag"	: "span",
-  										"inner"	: "vor 10 Stunden"
-  									}
-  								]
-  							},
-  							{
-  								"tag" 	: "div",
-  								"class" : "text",
-  								"inner"	: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
-  							},
-  							{
-  								"tag" 	: "div",
-  								"class" : "footer",
-  								"inner"	: [
-  									{
-  										"tag" 	: "a",
-  										"class"	: "reply",
-  										"href"	: "#",
-  										"inner"	: "Antworten"
-  									}
-  								]
-  							},
-  							{
-  								"tag" 	: "div",
-  								"class" : "followup",
-  								"inner"	: [
-  									{
-				  						"tag" 	: "div",
-				  						"class" : "comment",
-				  						"inner"	: [
-				  							{
-				  								"tag" 	: "div",
-				  								"class" : "meta",
-				  								"inner"	: [
-				  									{
-				  										"tag" 	: "span",
-				  										"class" : "header h4",
-				  										"inner"	: "Anonym"
-				  									},
-				  									{
-				  										"tag"	: "span",
-				  										"class"	: "spacer",
-				  										"inner"	: "•"
-				  									},
-				  									{
-				  										"tag"	: "span",
-				  										"inner"	: "vor 10 Stunden"
-				  									}
-				  								]
-				  							},
-				  							{
-				  								"tag" 	: "div",
-				  								"class" : "text",
-				  								"inner"	: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
-				  							},
-				  							{
-				  								"tag" 	: "div",
-				  								"class" : "footer",
-				  								"inner"	: [
-				  									{
-				  										"tag" 	: "a",
-				  										"class"	: "reply",
-				  										"href"	: "#",
-				  										"inner"	: "Antworten"
-				  									}
-				  								]
-				  							},
-				  							{
-				  								"tag" 	: "div",
-				  								"class" : "followup",
-				  								"inner"	: []
-				  							}
-				  						]
-				  					}
-  								]
-  							}
-  						]
-  					}
-  				]
-  			}
-  		]
-  	}
-  ]
+	"i18n" : {
+		"de" : {},
+		"en" : {}
+	},
+	"component" : {
+		"postbox" : {
+			"tag" : "div",
+			"class" : "postbox",
+			"inner" : [{
+					"tag" : "div",
+					"class" : "textarea placeholder",
+					"contenteditable" : "true",
+					"rows" : "2",
+					"cols" : "18",
+					"inner" : "Kommentar hier eintippen (mindestens 3 Zeichen)"
+				}, {
+					"tag" : "section",
+					"class" : "form-submit",
+					"inner" : [{
+							"tag" : "p",
+							"class" : "test2",
+							"inner" : [{
+									"tag" : "input",
+									"type" : "submit",
+									"class" : "submit-button",
+									"inner" : "Abschicken"
+								}
+							]
+						}, {
+							"tag" : "p",
+							"inner" : [{
+									"tag" : "label",
+									"inner" : [{
+											"tag" : "input",
+											"type" : "checkbox",
+											"name" : "anonymous"
+										}, {
+											"tag" : "span",
+											"inner" : "&nbsp;"
+										}, {
+											"tag" : "span",
+											"inner" : "Anonym"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		"comment" : {
+			"tag" : "div",
+			"class" : "comment",
+			"inner" : [{
+					"tag" : "div",
+					"class" : "meta",
+					"inner" : [{
+							"tag" : "span",
+							"class" : "header h4",
+							"inner" : "Anonym"
+						}, {
+							"tag" : "span",
+							"class" : "spacer",
+							"inner" : "•"
+						}, {
+							"tag" : "span",
+							"inner" : "vor 10 Stunden"
+						}
+					]
+				}, {
+					"tag" : "div",
+					"class" : "text",
+					"inner" : "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+				}, {
+					"tag" : "div",
+					"class" : "footer",
+					"inner" : [{
+							"tag" : "a",
+							"class" : "reply",
+							"href" : "#",
+							"inner" : "Antworten"
+						}
+					]
+				}, {
+					"tag" : "div",
+					"class" : "followup",
+					"inner" : []
+				}
+			]
+		}
+	},
+	"main" : [{
+			"tag" : "section",
+			"inner" : [{
+					"tag" : "div",
+					"class" : "header h3",
+					"inner" : "%number% Kommentare"
+				}, {
+					"tag" : "div",
+					"class" : "comments",
+					"inner" : []
+				}
+			]
+		}
+	]
 }
