@@ -1,14 +1,99 @@
 /**
  * @overview styling for ccm comment component
  * @author Patrick Reif <patrick.reif@inf.h-brs.de>
- * @copyright Copyright (c) 2016 Bonn-Rhein-Sieg University of Applied Sciences
  * @license The MIT License (MIT)
+ * 
+ * HTML and CSS ajar to posativ/isso component. A lightweight commenting server written in python and javascript
+ * See 	: https://github.com/posativ/isso
+ *		: https://posativ.org/isso/
+ *
+ * Also licensed under The MIT License (MIT)
+ */
+
+/* general styling 
+ * always uses 'ccm-comment' as base class to prevent overrides
  */
 
 .ccm-comment {
-	margin : 1rem;
+	font			: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color 			: black;
+	padding			: 1em;
 }
 
-.ccm-comment>.main {
+.ccm-comment .header {
+	color			: #555;
+	font-weight		: bold;
+	margin-bottom 	: 0.5em;
+}
+
+.ccm-comment .header.h1 {
+	font-size		: 2em;
+}
+
+.ccm-comment .header.h2 {
+	font-size		: 1.5em;
+}
+
+.ccm-comment .header.h3 {
+	font-size		: 1.17em;
+}
+
+/* ### comment postbox ### */
+
+.ccm-comment .postbox {
+	margin-bottom	: 2em;
+	max-width		: 48em;
+}
+
+/* textarea */
+
+.ccm-comment .textarea {
+	min-height			: 3em;
+	padding				: 1em;
+	margin-bottom		: .8em;
+	border				: 1px solid rgba(0, 0, 0, 0.2);
+	box-shadow			: 0 1px 2px rgba(0, 0, 0, 0.2);
+	border-radius		: 3px;
+}
+
+.ccm-comment .textarea:focus {
+	border-color		: rgba(0, 0, 0, 0.8);
+}
+
+.ccm-comment .placeholder {
+	color				: #AAA;
+}
+
+/* submit */
+
+.ccm-comment .form-submit {
 	
 }
+
+.ccm-comment .form-submit>p {
+	display				: inline-block;
+	height				: 2em;
+	margin				: 0;
+	float				: right;
+	margin-left			: 1em;
+	vertical-align		: middle;
+}
+
+.ccm-comment .form-submit>p>input {
+	width				: 12em;
+	height				: 2em;
+	background-color	: #F3F3F3;
+	border				: 1px solid #D8D8D8;
+	border-radius		: 3px;
+	outline				: 0;
+}
+
+.ccm-comment .form-submit>p>input:hover {
+	background-color	: #D6D6D6;
+}
+
+.ccm-comment .form-submit>p>input:active {
+	background-color	: #F3F3F3;
+}
+
+/*  */
