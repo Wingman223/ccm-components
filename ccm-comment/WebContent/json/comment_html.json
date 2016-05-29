@@ -67,7 +67,106 @@
   			},
   			{
   				"tag"	: "div",
-  				"class"	: "comment_display"
+  				"class"	: "comments",
+  				"inner"	: [
+  					{
+  						"tag" 	: "div",
+  						"class" : "comment",
+  						"inner"	: [
+  							{
+  								"tag" 	: "div",
+  								"class" : "meta",
+  								"inner"	: [
+  									{
+  										"tag" 	: "span",
+  										"class" : "header h4",
+  										"inner"	: "Anonym"
+  									},
+  									{
+  										"tag"	: "span",
+  										"class"	: "spacer",
+  										"inner"	: "•"
+  									},
+  									{
+  										"tag"	: "span",
+  										"inner"	: "vor 10 Stunden"
+  									}
+  								]
+  							},
+  							{
+  								"tag" 	: "div",
+  								"class" : "text",
+  								"inner"	: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+  							},
+  							{
+  								"tag" 	: "div",
+  								"class" : "footer",
+  								"inner"	: [
+  									{
+  										"tag" 	: "a",
+  										"class"	: "reply",
+  										"href"	: "#",
+  										"inner"	: "Antworten"
+  									}
+  								]
+  							},
+  							{
+  								"tag" 	: "div",
+  								"class" : "followup",
+  								"inner"	: [
+  									{
+				  						"tag" 	: "div",
+				  						"class" : "comment",
+				  						"inner"	: [
+				  							{
+				  								"tag" 	: "div",
+				  								"class" : "meta",
+				  								"inner"	: [
+				  									{
+				  										"tag" 	: "span",
+				  										"class" : "header h4",
+				  										"inner"	: "Anonym"
+				  									},
+				  									{
+				  										"tag"	: "span",
+				  										"class"	: "spacer",
+				  										"inner"	: "•"
+				  									},
+				  									{
+				  										"tag"	: "span",
+				  										"inner"	: "vor 10 Stunden"
+				  									}
+				  								]
+				  							},
+				  							{
+				  								"tag" 	: "div",
+				  								"class" : "text",
+				  								"inner"	: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+				  							},
+				  							{
+				  								"tag" 	: "div",
+				  								"class" : "footer",
+				  								"inner"	: [
+				  									{
+				  										"tag" 	: "a",
+				  										"class"	: "reply",
+				  										"href"	: "#",
+				  										"inner"	: "Antworten"
+				  									}
+				  								]
+				  							},
+				  							{
+				  								"tag" 	: "div",
+				  								"class" : "followup",
+				  								"inner"	: []
+				  							}
+				  						]
+				  					}
+  								]
+  							}
+  						]
+  					}
+  				]
   			}
   		]
   	}
