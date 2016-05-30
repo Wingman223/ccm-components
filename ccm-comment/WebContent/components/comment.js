@@ -130,32 +130,30 @@ ccm.component( {
 	    	  // there is the hardcoded one on top and a dynamic one on reply request below
 	    	  // the comment. 
 	    	  // There is a placeholder at the 2nd index. We replace it with the real component
-	    	  //replaceAggregation(layout_main, 1, components["postbox"]);
+	    	  replaceAggregation(layout_main, 1, components["postbox"]);
 	    	  
 	    	  // render dom so that we gain access to the html elements
 	    	  var main_div = ccm.helper.element( self );
 	    	  main_div.html( ccm.helper.html( self.html.main, { number : data.count } ));
 	    	  
-	    	  insertPostbox(main_div, 1);
+	    	  // the postbox can be inserted at a static place
+	    	  // insertPostbox(main_div, 1);
 	    	  
 	    	  // now insert comments
-	    	  var comments_div 	= $(".postbox").first();
+	    	  var comments_div 	= main_div.find(".comments").first();
 	    	  for( var i=0; i < data.comments.length; i++ ) {
-	    		  // get and convert data to appropriate format
-	    		  var comment 	= data.comments[i];
-	    		  var date		= convertISODateToDate(comment.date);
-	    		  var date_text	= convertDateForOutput(date);
-	    		  
-	    		  // append it to the DOM
-	    		  appendComment(comments_div, comment);
+	    		  // append comment to the element
+	    		  var comment 		= data.comments[i];
+	    		  var comment_div 	= appendComment(comments_div, comment);
 	    		  
 	    		  // check if there are replies. If yes attach them, too
 	    		  if( comment.replies && comment.replies.length > 0 ) {
-	    			  var followup_div	= comments_div.children(".followup").first();
+	    			  var followup_div	= comment_div.children(".followup").first();
 	    			  var replies 		= comment.replies;
 	    			  
 	    			  for( var j=0; j<replies.length; j++ ) {
-	    				  
+	    				  var reply 	= replies[j];
+	    	    		  appendComment(followup_div, reply);
 	    			  }
 	    		  }
 	    	  }
@@ -167,7 +165,7 @@ ccm.component( {
 	    	  // PRIVATE
 	    	  
 	    	  function insertPostbox(element, index) {
-	    		  insertHTML(element, 1, getTemplate("postbox"), data);
+	    		  return insertHTML(element, 1, getTemplate("postbox"), data);
 	    	  };
 	    	  
 	    	  function appendComment(element, comment) {
@@ -180,39 +178,10 @@ ccm.component( {
 		    		  text : comment.text
 		    	  };
 	    		  
-	    		  appendHTML(element, getTemplate("comment"), data);
+	    		  return appendHTML(element, getTemplate("comment"), data);
 	    	  };
 	    	  
-	    	  // DOM operations
-	    	  // append at the end
-	    	  function appendHTML(element, template, data) {
-	    		  element.append(ccm.helper.html(template, data));
-	    	  };
-	    	  
-	    	  // insert at index
-	    	  // jQuery doesn't support insert at index out of the box
-	    	  // insert at index code from : http://stackoverflow.com/questions/3562493/jquery-insert-div-as-certain-index
-	    	  // autor : Didier Ghys
-	    	  function insertHTML(element, index, template, data) {
-	    		  
-	    		  var lastIndex = element.children().size()
-	    		  if (index < 0) {
-	    		    index = Math.max(0, lastIndex + 1 + index)
-	    		  }
-	    		  element.append(ccm.helper.html(template, data))
-	    		  if (index < lastIndex) {
-	    			  element.children().eq(index).before(element.children().last())
-	    		  }
-	    	  }
-	    	  
-	    	  // get template from json data
-	    	  function getTemplate(name) {
-	    		  return self.html.component[name];
-	    	  }
-	    	  
-	    	  // UTIL: Operations on arrays
-	    	  
-	    	  // calculcates the time difference between the given and current date
+	    	// calculcates the time difference between the given and current date
 	    	  // outputs a string with an appropriate number between
 	    	  //
 	    	  // Used tutorial : http://stackoverflow.com/questions/17732897/difference-between-two-dates-in-years-months-days-in-javascript
@@ -247,12 +216,46 @@ ccm.component( {
 	    		  }
 	    	  };
 	    	  
+	    	  // get html template from json data
+	    	  function getTemplate(name) {
+	    		  return self.html.component[name];
+	    	  }
+	    	  
+	    	  // --------------------------------------------------------------------
+	    	  // UTILS
+	    	  
 	    	  // Konvertiert ein ISO Datum zu einem regulären DAtum
 	    	  function convertISODateToDate(isodate) {
 	    		  return new Date(isodate);
 	    	  };
 	    	  
+	    	  // compile and append the given html template to the dom element
+	    	  function appendHTML(element, template, data) {
+	    		  var compiled = ccm.helper.html(template, data)
+	    		  element.append(compiled);
+	    		  
+	    		  return compiled;
+	    	  };
+	    	  
+	    	  // compile and insert the given html template at the provided index
+	    	  // jQuery doesn't support insert at index out of the box, so i used a tutorial here
+	    	  // url	: http://stackoverflow.com/questions/3562493/jquery-insert-div-as-certain-index
+	    	  // autor 	: Didier Ghys
 	    	  /*
+	    	  function insertHTML(element, index, template, data) {
+	    		  
+	    		  var lastIndex = element.children().size()
+	    		  if (index < 0) {
+	    		    index = Math.max(0, lastIndex + 1 + index)
+	    		  }
+	    		  var appendedElement = element.append(ccm.helper.html(template, data));
+	    		  if (index < lastIndex) {
+	    			  element.children().eq(index).before(element.children().last())
+	    		  }
+	    		  return appendedElement;
+	    	  }
+	    	  */
+	    	  
 	    	  // replace an object in an array with a new one
 	    	  function replaceAggregation(array, index, component) {
 	    		  array[index] = copyObject(component);
@@ -275,7 +278,6 @@ ccm.component( {
 	    	  function copyObject(o) {
 	    		  return JSON.parse(JSON.stringify(o));
 	    	  }
-	    	  */
 	      });
 	};
   }
