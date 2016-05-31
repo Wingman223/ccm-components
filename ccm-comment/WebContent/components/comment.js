@@ -123,21 +123,24 @@ ccm.component( {
 	    	  // Get the main structure and set pointers to the important layout parts
 	    	  var layout 			= self.html.main;
 	    	  var layout_main		= layout[0].inner;
-	    	  var layout_comments	= layout_main[2].inner
+	    	  var layout_comments	= layout_main[1].inner
 	    		  
 	    	  // the postbox is used in multiple places. So instead of writing it directly
 	    	  // into the layout we insert it dynamically on request
 	    	  // there is the hardcoded one on top and a dynamic one on reply request below
 	    	  // the comment. 
 	    	  // There is a placeholder at the 2nd index. We replace it with the real component
-	    	  replaceAggregation(layout_main, 1, components["postbox"]);
+	    	  // replaceAggregation(layout_main, 1, components["postbox"]);
 	    	  
 	    	  // render dom so that we gain access to the html elements
-	    	  var main_div = ccm.helper.element( self );
-	    	  main_div.html( ccm.helper.html( self.html.main, { number : data.count } ));
+	    	  var layout_div = ccm.helper.element( self );
+	    	  layout_div.html( ccm.helper.html( self.html.main, { 
+	    		  number : data.count
+	    	  }));
 	    	  
-	    	  // the postbox can be inserted at a static place
-	    	  // insertPostbox(main_div, 1);
+	    	  // postbox can be inserted at a static place in the main layout
+	    	  var main_div	= layout_div.children().eq(0);
+	    	  insertPostbox(main_div, 0);
 	    	  
 	    	  // now insert comments
 	    	  var comments_div 	= main_div.find(".comments").first();
@@ -164,8 +167,28 @@ ccm.component( {
 	    	  // ---------------------------------------------------------------------------
 	    	  // PRIVATE
 	    	  
+	    	  // TODO REFACTOR! USE CCM-EVENTS WHEN POSSIBLE
 	    	  function insertPostbox(element, index) {
-	    		  return insertHTML(element, 1, getTemplate("postbox"), data);
+	    		  
+	    		  // first append postbox
+	    		  var postbox 	= insertHTML(element, 1, getTemplate("postbox"), data);
+	    		  
+	    		  // then register events
+	    		  // textarea input
+	    		  var textarea 		= postbox.children(".textarea").eq(0);
+	    		  textarea.on("click"		, onPostboxClick);
+	    		  textarea.on("focusout"	, onPostboxFocusOut);
+	    		  
+	    		  // submit
+	    		  var submitsection		= postbox.children("section").eq(0).children()
+	    		  var checkbox			= submitsection.eq(1).children().eq(0).children("input").eq(0);
+	    		  var submitbutton		= submitsection.eq(0).children().eq(0);
+	    		  
+	    		  submitbutton.on("click", function(event) {
+	    			  onPostboxSubmit(event, textarea, checkbox);
+	    		  });
+	    		  
+	    		  return postbox;
 	    	  };
 	    	  
 	    	  function appendComment(element, comment) {
@@ -181,7 +204,7 @@ ccm.component( {
 	    		  return appendHTML(element, getTemplate("comment"), data);
 	    	  };
 	    	  
-	    	// calculcates the time difference between the given and current date
+	    	  // calculcates the time difference between the given and current date
 	    	  // outputs a string with an appropriate number between
 	    	  //
 	    	  // Used tutorial : http://stackoverflow.com/questions/17732897/difference-between-two-dates-in-years-months-days-in-javascript
@@ -222,6 +245,84 @@ ccm.component( {
 	    	  }
 	    	  
 	    	  // --------------------------------------------------------------------
+	    	  // BUSINESS LOGIC
+	    	  
+	    	  function onPostboxClick() {
+	    		  $(this).toggleClass("inputerror"	, false);
+	    		  
+	    		  // get text and make sure it's not compromised
+	    		  $(this).text(function(index, text) {
+	    			  var text_cleaned = ccm.helper.val(text);
+	    			  
+	    			  if( typeof text_cleaned === "string" && text_cleaned.length > 0 ) {
+	    				  if( text_cleaned === "Kommentar hier eintippen (mindestens 3 Zeichen)" ) {
+	    					  $(this).toggleClass("placeholder"	, false);
+	    					  return "";
+	    				  }
+	    			  }
+	    		  });
+	    	  };
+	    	  
+	    	  function onPostboxFocusOut() {
+	    		  $(this).toggleClass("inputerror"	, false);
+	    		  
+	    		  // set text when user didn't input any text
+	    		  $(this).text(function(index, text) {
+	    			  var text_cleaned = ccm.helper.val(text);
+	    			  
+	    			  if( typeof text_cleaned === "string" && text_cleaned.length === 0 ) {
+	    				  $(this).toggleClass("placeholder"	, true);
+	    				  return "Kommentar hier eintippen (mindestens 3 Zeichen)";
+	    			  }
+	    		  });
+	    	  };
+	    	  
+	    	  function onPostboxSubmit(event, textarea, checkbox) {
+	    		  
+	    		  textarea.text(function(index, text) {
+	    			  var text_cleaned 	= ccm.helper.val(text);
+	    			  var anonymous		= checkbox.prop("checked");
+	    			  
+	    			  if( typeof text_cleaned === "string" && text_cleaned.length > 2 ) {
+	    				  if( text_cleaned !== "Kommentar hier eintippen (mindestens 3 Zeichen)" ) {
+	    					  post(text_cleaned, anonymous);
+	    					  textarea.toggleClass("inputerror", false);
+	    				  } else {
+	    					  textarea.toggleClass("inputerror", true);
+	    				  }
+	    			  } else {
+	    				  textarea.toggleClass("inputerror", true);
+	    			  }
+	    		  });
+	    	  };
+	    	  
+	    	  // TODO CHECK MODIFY DATE
+	    	  function post(text, anonymous) {
+	    		  self.store.get( self.key, function(dataset) {
+	    			 
+	    			  var data 	= dataset.data;
+	    			  var user;
+	    			  
+	    			  if( anonymous ) {
+	    				  user	= "Anonym";
+	    			  } else {
+	    				  user	= "Angemeldeter Benutzer";
+	    			  }
+	    			  
+	    			  data.comments.push({
+	    				  name 		: user,
+	    				  date		: (new Date()).toJSON(),
+	    				  text		: text,
+	    				  replies 	: []
+	    			  });
+	    			  
+	    			  self.store.set( dataset, function() {
+	    				  self.render();
+	    			  });
+	    		  });
+	    	  };
+	    	  
+	    	  // --------------------------------------------------------------------
 	    	  // UTILS
 	    	  
 	    	  // Konvertiert ein ISO Datum zu einem regulären DAtum
@@ -231,30 +332,27 @@ ccm.component( {
 	    	  
 	    	  // compile and append the given html template to the dom element
 	    	  function appendHTML(element, template, data) {
-	    		  var compiled = ccm.helper.html(template, data)
-	    		  element.append(compiled);
+	    		  var appended = ccm.helper.html(template, data)
+	    		  element.append(appended);
 	    		  
-	    		  return compiled;
+	    		  return appended;
 	    	  };
 	    	  
 	    	  // compile and insert the given html template at the provided index
 	    	  // jQuery doesn't support insert at index out of the box, so i used a tutorial here
 	    	  // url	: http://stackoverflow.com/questions/3562493/jquery-insert-div-as-certain-index
 	    	  // autor 	: Didier Ghys
-	    	  /*
-	    	  function insertHTML(element, index, template, data) {
-	    		  
+	    	  function insertHTML(element, index, template, data) {	  
 	    		  var lastIndex = element.children().size()
 	    		  if (index < 0) {
 	    		    index = Math.max(0, lastIndex + 1 + index)
 	    		  }
-	    		  var appendedElement = element.append(ccm.helper.html(template, data));
+	    		  var appendedElement = appendHTML(element, template, data);
 	    		  if (index < lastIndex) {
 	    			  element.children().eq(index).before(element.children().last())
 	    		  }
 	    		  return appendedElement;
 	    	  }
-	    	  */
 	    	  
 	    	  // replace an object in an array with a new one
 	    	  function replaceAggregation(array, index, component) {
@@ -278,11 +376,11 @@ ccm.component( {
 	    	  function copyObject(o) {
 	    		  return JSON.parse(JSON.stringify(o));
 	    	  }
-	      });
+	      }); 
 	};
   }
-
-  /*------------------------------------------------ type definitions ------------------------------------------------*/
+  
+  /* ------------------------------------------------ type definitions ------------------------------------------------*/
 
   /**
    * @namespace ccm.components.comment

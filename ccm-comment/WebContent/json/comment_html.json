@@ -21,10 +21,10 @@
 							"tag" : "p",
 							"class" : "test2",
 							"inner" : [{
-									"tag" : "input",
-									"type" : "submit",
-									"class" : "submit-button",
-									"inner" : "Abschicken"
+									"tag" 		: "input",
+									"type" 		: "submit",
+									"class" 	: "submit-button",
+									"inner" 	: "Abschicken"
 								}
 							]
 						}, {
@@ -100,7 +100,6 @@
 					"class" : "header h3",
 					"inner" : "%number% Kommentare"
 				},
-				{ "component"	: "postbox" },
 				{
 					"tag" : "div",
 					"class" : "comments",

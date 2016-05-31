@@ -70,6 +70,10 @@
 	color				: #AAA;
 }
 
+.ccm-comment .inputerror {
+	border				: 1px solid red;
+}
+
 /* submit */
 
 .ccm-comment .form-submit {}

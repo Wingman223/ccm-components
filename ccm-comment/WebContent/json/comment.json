@@ -2,24 +2,24 @@
 	"count"		: 2,
 	"comments" 	: [
 		{
-			"name" 		: "Anonym 1",
+			"name" 		: "David Freud",
 			"date" 		: "2016-05-29T15:58:43.500Z",
-			"text" 		: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+			"text" 		: "Coole Idee! Ich denke daraus kann man einiges machen",
 			"replies" 	: [
 				{
-					"name" 		: "Anonym 2",
+					"name" 		: "Sven Lowe",
 					"date" 		: "2016-04-29T16:00:43.500Z",
 					"text" 		: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
 				}
 			]
 		},
 		{
-			"name" 		: "Anonym 3",
+			"name" 		: "Anonym",
 			"date" 		: "2015-05-29T15:58:43.500Z",
 			"text" 		: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
 			"replies" 	: [
 				{
-					"name" 		: "Anonym 4",
+					"name" 		: "Marko Wirtz",
 					"date" 		: "2016-05-30T02:26:43.500Z",
 					"text" 		: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
 				}
