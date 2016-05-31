@@ -216,9 +216,9 @@ ccm.component( {
 	    		  var diff		= new Date(curr - date);
 	    		  
 	    		  var minutes	= diff.getMinutes();
-	    		  var hours		= diff.getHours();
-	    		  var days		= diff.getDate();
-	    		  var months	= diff.getMonth();
+	    		  var hours		= diff.getHours() - 1;
+	    		  var days		= diff.getDate() - 1;
+	    		  var months	= diff.getMonth() - 1;
 	    		  var years		= diff.toISOString().slice(0, 4) - 1970;
 	    		  
 	    		  if( years > 0 ) {
