@@ -137,6 +137,8 @@
 	font-weight			: bold;
 	font-size			: .8em;
 	color				: #00aac2;
+	cursor				: default;
+	text-decoration		: line-through;
 }
 
 .ccm-comment .comment>.followup {

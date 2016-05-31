@@ -1,27 +1,27 @@
 {
-	"count"		: 2,
+	"count"		: 4,
 	"comments" 	: [
 		{
 			"name" 		: "David Freud",
-			"date" 		: "2016-05-29T15:58:43.500Z",
-			"text" 		: "Coole Idee! Ich denke daraus kann man einiges machen",
+			"date" 		: "2016-04-29T16:00:43.500Z",
+			"text" 		: "Ich denke daraus kann man einiges machen. Ich würde empfehlen beim abspeichern den aktuellen Wert zu prüfen nicht das jemand ein Skript injiziert",
 			"replies" 	: [
 				{
 					"name" 		: "Sven Lowe",
-					"date" 		: "2016-04-29T16:00:43.500Z",
-					"text" 		: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+					"date" 		: "2016-05-29T15:58:43.500Z",
+					"text" 		: "Gute Idee! Daran hatte ich garnicht gedacht. Dank dir!"
 				}
 			]
 		},
 		{
 			"name" 		: "Anonym",
 			"date" 		: "2015-05-29T15:58:43.500Z",
-			"text" 		: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+			"text" 		: "Gibt schon einige dieser Art aber ich denke das ist ein guter Ansatz den du weiter verfolgen solltest",
 			"replies" 	: [
 				{
 					"name" 		: "Marko Wirtz",
 					"date" 		: "2016-05-30T02:26:43.500Z",
-					"text" 		: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+					"text" 		: "Ja das ganze funktioniert schon ganz gut. Denke mit der nächsten Version wird man auch auf Kommentare antworten können. Freu mich schon darauf"
 				}
 			]
 		}

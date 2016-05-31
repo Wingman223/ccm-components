@@ -75,9 +75,11 @@ ccm.component( {
     self.ready = function ( callback ) {
 
 		// init datastore
+    	/*
 	    self.store.del( self.key, function() {
 	    	
 	    	console.log("data deleted");
+	    */
 	    	self.store.get( self.key, function(dataset) {
 	    		
 	    		console.log("got data");
@@ -96,7 +98,7 @@ ccm.component( {
 	    			proceed(dataset);
 	    		}
 	    	});
-	    });
+	    //});
 	    
 	    // when done call callback
 	    function proceed( dataset2 ) {
@@ -226,7 +228,7 @@ ccm.component( {
 	    			  return "vor " + months + " " + ( months > 1 ? "Monate" : "Monat"); 
 	    		  }
 	    		  else if ( days > 0 ) {
-	    			  return "vor " + days + " " + ( days > 1 ? "Tage" : "Tag"); 
+	    			  return "vor " + days + " " + ( days > 1 ? "Tagen" : "Tag"); 
 	    		  }
 	    		  else if ( hours > 0 ) {
 	    			  return "vor " + hours + " " + ( hours > 1 ? "Stunden" : "Stunde");
@@ -315,6 +317,14 @@ ccm.component( {
 	    				  text		: text,
 	    				  replies 	: []
 	    			  });
+	    			  
+	    			  
+	    			  var count = data.comments.length;
+	    			  for( var i=0; i<data.comments.length; i++ ) {
+	    				  count += data.comments[i].replies.length;
+	    			  }
+	    			  
+	    			  dataset.data.count = count;
 	    			  
 	    			  self.store.set( dataset, function() {
 	    				  self.render();
