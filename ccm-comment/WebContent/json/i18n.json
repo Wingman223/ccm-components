@@ -1,0 +1,16 @@
+{
+	"de" : {
+		"HEADER_NUM_COMMENTS"	: "Kommentare",
+		"POSTBOX_INSERTCOMMENT" : "Kommentar hier eintippen (mindestens 3 Zeichen)",
+		"POSTBOX_SEND"			: "Abschicken",
+		"POSTBOX_USER_GUEST"	: "Gast",
+		"COMMENT_BUTTON_REPLY"	: "Antworten"
+	},
+	"en" : {
+		"HEADER_NUM_COMMENTS"	: "Comments",
+		"POSTBOX_INSERTCOMMENT" : "Insert comment here (at least 3 characters)",
+		"POSTBOX_SEND"			: "Send",
+		"POSTBOX_USER_GUEST"	: "Guest",
+		"COMMENT_BUTTON_REPLY"	: "Reply"
+	}
+}

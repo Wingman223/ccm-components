@@ -1,46 +1,54 @@
 {
-	"i18n" : {
-		"de" : {},
-		"en" : {}
-	},
 	"component" : {
 		"postbox" : {
-			"tag" : "div",
+			"tag" 	: "div",
 			"class" : "postbox",
-			"inner" : [{
-					"tag" : "div",
-					"class" : "textarea placeholder",
-					"contenteditable" : "true",
-					"rows" : "2",
-					"cols" : "18",
-					"inner" : "Kommentar hier eintippen (mindestens 3 Zeichen)"
-				}, {
-					"tag" : "section",
+			"inner" : [
+				{
+					"tag" 				: "div",
+					"class" 			: "textarea placeholder",
+					"contenteditable" 	: "true",
+					"rows" 				: "2",
+					"cols" 				: "18",
+					"inner" 			: "%POSTBOX_INSERTCOMMENT%",
+					"onclick"			: "%onPostboxTextareaClick%",
+					"onfocusout"		: "%onPostboxTextareaFocusout%"
+				},
+				{
+					"tag" 	: "section",
 					"class" : "form-submit",
-					"inner" : [{
-							"tag" : "p",
+					"inner" : [
+						{
+							"tag" 	: "p",
 							"class" : "test2",
-							"inner" : [{
+							"inner" : [
+								{
 									"tag" 		: "input",
 									"type" 		: "submit",
 									"class" 	: "submit-button",
-									"inner" 	: "Abschicken"
+									"inner" 	: "%POSTBOX_SEND%",
+									"onclick"	: "%onPostboxButtonSubmitClick%"
 								}
 							]
-						}, {
-							"tag" : "p",
-							"inner" : [{
-									"tag" : "label",
-									"inner" : [{
-											"tag" : "input",
-											"type" : "checkbox",
-											"name" : "anonymous"
-										}, {
-											"tag" : "span",
+						}, 
+						{
+							"tag" 	: "p",
+							"inner" : [
+								{
+									"tag" 	: "label",
+									"inner" : [
+										{
+											"tag" 	: "input",
+											"type" 	: "checkbox",
+											"name" 	: "anonymous"
+										},
+										{
+											"tag" 	: "span",
 											"inner" : "&nbsp;"
-										}, {
-											"tag" : "span",
-											"inner" : "Anonym"
+										},
+										{
+											"tag" 	: "span",
+											"inner" : "%POSTBOX_USER_GUEST%"
 										}
 									]
 								}
@@ -51,12 +59,14 @@
 			]
 		},
 		"comment" : {
-			"tag" : "div",
+			"tag" 	: "div",
 			"class" : "comment",
-			"inner" : [{
-					"tag" : "div",
+			"inner" : [
+				{
+					"tag" 	: "div",
 					"class" : "meta",
-					"inner" : [{
+					"inner" : [
+						{
 							"tag" 	: "span",
 							"class" : "header h4",
 							"inner" : "%name%"
@@ -69,43 +79,45 @@
 							"inner" : "%date%"
 						}
 					]
-				},{
-					"tag" : "div",
+				},
+				{
+					"tag" 	: "div",
 					"class" : "text",
 					"inner" : "%text%"
-				}, {
-					"tag" : "div",
+				},
+				{
+					"tag" 	: "div",
 					"class" : "footer",
-					"inner" : [{
-							"tag" : "a",
-							"class" : "reply",
-							"href" : "#",
-							"inner" : "Antworten"
+					"inner" : [
+						{
+							"tag" 		: "a",
+							"class" 	: "reply",
+							"href" 		: "#",
+							"inner" 	: "%COMMENT_BUTTON_REPLY%",
+							"onclick" 	: "%onCommentButtonReplyClick%"
 						}
 					]
-				}, {
-					"tag" : "div",
+				},
+				{
+					"tag" 	: "div",
 					"class" : "followup",
 					"inner" : []
 				}
 			]
 		}
 	},
-	"main" : [
-		{
-			"tag" : "section",
-			"inner" : [
-				{
-					"tag" 	: "div",
-					"class" : "header h3",
-					"inner" : "%number% Kommentare"
-				},
-				{
-					"tag" : "div",
-					"class" : "comments",
-					"inner" : []
-				}
-			]
-		}
-	]
+	"main" : {
+		"tag" 	: "section",
+		"inner" : [
+			{
+				"tag" 	: "h1",
+				"inner" : "%number% %HEADER_NUM_COMMENTS%"
+			},
+			{
+				"tag" 	: "div",
+				"class" : "comments",
+				"inner" : []
+			}
+		]
+	}
 }

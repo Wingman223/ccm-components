@@ -24,9 +24,10 @@ ccm.component( {
   config: {
 	key		: 'comment'		,
     html	: [ ccm.load	, './json/comment_html.json' ],
-    //store	: [ ccm.store	, './json/comment.json' ],
-    store	: [ ccm.store	, { url: 'ws://ccm2.inf.h-brs.de/index.js', store: 'comment' }],
     mock	: [ ccm.load	, './json/comment.json' ],
+    i18n	: [ ccm.load	, './json/i18n.json' ],
+    store	: [ ccm.store	, { url: 'ws://ccm2.inf.h-brs.de/index.js', store: 'comment' }],
+    user	: [ ccm.instance, 'https://kaul.inf.h-brs.de/ccm/components/user2.js' ],
     style	: [ ccm.load	, './css/comment.css' ]
   },
 
@@ -60,26 +61,14 @@ ccm.component( {
      */
     self.init = function ( callback ) {
     	
-    	// ...
+    	// set localization to de
+    	self.i18n = self.i18n.de
     	
-    	callback();
-    };
-
-    /**
-     * @summary when <i>ccm</i> instance is ready
-     * @description
-     * Called one-time when this <i>ccm</i> instance and dependent <i>ccm</i> components, instances and datastores are initialized and ready.
-     * This method will be removed by <i>ccm</i> after the one-time call.
-     * @param {function} callback - callback when this instance is ready
-     */
-    self.ready = function ( callback ) {
-
-		// init datastore
-    	/*
-	    self.store.del( self.key, function() {
+    	// init datastore
+	    /*self.store.del( self.key, function() {
 	    	
 	    	console.log("data deleted");
-	    */
+	    	*/
 	    	self.store.get( self.key, function(dataset) {
 	    		
 	    		console.log("got data");
@@ -101,13 +90,32 @@ ccm.component( {
 	    //});
 	    
 	    // when done call callback
-	    function proceed( dataset2 ) {
+	    function proceed( dataset ) {
+	    	
+	    	// listen to change event of ccm realtime datastore => update own content
+	        self.store.onChange = function () {
+	        	self.render();
+	        };
 	    	
 	    	console.log("initialized!");
-	    	console.log(dataset2);
+	    	console.log(dataset);
 	    	
 	    	callback();
 	    }
+    };
+
+    /**
+     * @summary when <i>ccm</i> instance is ready
+     * @description
+     * Called one-time when this <i>ccm</i> instance and dependent <i>ccm</i> components, instances and datastores are initialized and ready.
+     * This method will be removed by <i>ccm</i> after the one-time call.
+     * @param {function} callback - callback when this instance is ready
+     */
+    self.ready = function ( callback ) {
+    	
+    	// ...
+    	
+    	callback();
     };
 
     /**
@@ -122,41 +130,39 @@ ccm.component( {
 	    	  var data 				= dataset.data;
 	    	  // Dynamic components we use for insertion
 	    	  var components		= self.html.component;
-	    	  // Get the main structure and set pointers to the important layout parts
-	    	  var layout 			= self.html.main;
-	    	  var layout_main		= layout[0].inner;
-	    	  var layout_comments	= layout_main[1].inner
-	    		  
-	    	  // the postbox is used in multiple places. So instead of writing it directly
-	    	  // into the layout we insert it dynamically on request
-	    	  // there is the hardcoded one on top and a dynamic one on reply request below
-	    	  // the comment. 
-	    	  // There is a placeholder at the 2nd index. We replace it with the real component
-	    	  // replaceAggregation(layout_main, 1, components["postbox"]);
+	    	  // i18n model
+	    	  var i18n				= self.i18n;
 	    	  
-	    	  // render dom so that we gain access to the html elements
-	    	  var layout_div = ccm.helper.element( self );
-	    	  layout_div.html( ccm.helper.html( self.html.main, { 
-	    		  number : data.count
-	    	  }));
+	    	  // ---------------------------------------------------
 	    	  
-	    	  // postbox can be inserted at a static place in the main layout
-	    	  var main_div	= layout_div.children().eq(0);
-	    	  insertPostbox(main_div, 0);
+	    	  // setup layout
+	    	  var body 		= ccm.helper.element(self);
+	    	  var section 	= set(body, self.html.main, {
+	    		  number 				: data.count,
+	    		  HEADER_NUM_COMMENTS	: i18n.HEADER_NUM_COMMENTS
+	    	  });
 	    	  
-	    	  // now insert comments
-	    	  var comments_div 	= main_div.find(".comments").first();
+	    	  // add postbox directly after the header
+	    	  var header	= first(section, "h1");
+	    	  var postbox	= insertPostboxAfter(header);
+	    	  
+	    	  // now render comments
+	    	  var comments	= first(section, ".comments");
 	    	  for( var i=0; i < data.comments.length; i++ ) {
+	    		  
 	    		  // append comment to the element
-	    		  var comment 		= data.comments[i];
-	    		  var comment_div 	= appendComment(comments_div, comment);
+	    		  var comment		= data.comments[i];
+	    		  var comment_div	= appendComment(comments, comment);
 	    		  
 	    		  // check if there are replies. If yes attach them, too
 	    		  if( comment.replies && comment.replies.length > 0 ) {
-	    			  var followup_div	= comment_div.children(".followup").first();
-	    			  var replies 		= comment.replies;
 	    			  
-	    			  for( var j=0; j<replies.length; j++ ) {
+	    			  // get followup data
+	    			  var followup_div 	= first(comment_div, ".followup");
+	    			  var replies		= comment.replies;
+	    			  
+	    			  // append replies
+	    			  for( var j=0; j < replies.length; j++ ) {
 	    				  var reply 	= replies[j];
 	    	    		  appendComment(followup_div, reply);
 	    			  }
@@ -169,15 +175,54 @@ ccm.component( {
 	    	  // ---------------------------------------------------------------------------
 	    	  // PRIVATE
 	    	  
-	    	  // TODO REFACTOR! USE CCM-EVENTS WHEN POSSIBLE
+	    	  function insertPostboxAfter(element) {
+	    		  return insertAfter(element, getTemplate("postbox"), {
+	    			  // i18n
+	    			  POSTBOX_INSERTCOMMENT			: i18n.POSTBOX_INSERTCOMMENT,
+	    			  POSTBOX_SEND					: i18n.POSTBOX_SEND,
+	    			  POSTBOX_USER_GUEST			: i18n.POSTBOX_USER_GUEST,
+	    			  // events
+	    			  onPostboxTextareaClick 		: function() {
+	    				  console.log("click");
+	    			  },
+	    			  onPostboxTextareaFocusout 	: function() {
+	    				  console.log("focusout");
+	    			  },
+	    			  onPostboxButtonSubmitClick	: function() {
+	    				  console.log("submit");
+	    			  }
+	    		  });
+	    	  };
+	    	  
+	    	  function appendComment(element, comment) {
+	    		  
+	    		  var date		= convertISODateToDate(comment.date);
+	    		  var data 		= {
+	    			  // localization
+	    			  COMMENT_BUTTON_REPLY		: i18n.COMMENT_BUTTON_REPLY,
+	    			  // data
+	    			  name 						: comment.name,
+	    			  date 						: convertDateForOutput(date),
+	    			  text 						: comment.text,
+	    			  // events
+	    			  onCommentButtonReplyClick	: function() {
+	    				  console.log("reply");
+	    			  }
+		    	  };
+	    		  
+	    		  return append(element, getTemplate("comment"), data);
+	    	  };
+	    	  
+	    	  
+	    	  /*
 	    	  function insertPostbox(element, index) {
 	    		  
 	    		  // first append postbox
-	    		  var postbox 	= insertHTML(element, 1, getTemplate("postbox"), data);
+	    		  var postbox = insertHTML(element, 1, getTemplate("postbox"), data);
 	    		  
 	    		  // then register events
 	    		  // textarea input
-	    		  var textarea 		= postbox.children(".textarea").eq(0);
+	    		  var textarea = postbox.children(".textarea").eq(0);
 	    		  textarea.on("click"		, onPostboxClick);
 	    		  textarea.on("focusout"	, onPostboxFocusOut);
 	    		  
@@ -205,6 +250,7 @@ ccm.component( {
 	    		  
 	    		  return appendHTML(element, getTemplate("comment"), data);
 	    	  };
+	    	  */
 	    	  
 	    	  // calculcates the time difference between the given and current date
 	    	  // outputs a string with an appropriate number between
@@ -244,7 +290,7 @@ ccm.component( {
 	    	  // get html template from json data
 	    	  function getTemplate(name) {
 	    		  return self.html.component[name];
-	    	  }
+	    	  };
 	    	  
 	    	  // --------------------------------------------------------------------
 	    	  // BUSINESS LOGIC
@@ -298,7 +344,6 @@ ccm.component( {
 	    		  });
 	    	  };
 	    	  
-	    	  // TODO CHECK MODIFY DATE
 	    	  function post(text, anonymous) {
 	    		  self.store.get( self.key, function(dataset) {
 	    			 
@@ -340,53 +385,45 @@ ccm.component( {
 	    		  return new Date(isodate);
 	    	  };
 	    	  
-	    	  // compile and append the given html template to the dom element
-	    	  function appendHTML(element, template, data) {
-	    		  var appended = ccm.helper.html(template, data)
-	    		  element.append(appended);
+	    	  // html selektoren
+	    	  
+	    	  function first(element, selector) {
+	    		  return find(element, selector).first();
+	    	  };
+	    	  
+	    	  function find(element, selector) {
+	    		  return $(element).children(selector);
+	    	  };
+	    	  
+	    	  // html operationen
+	    	  
+	    	  function set(element, template, data) {
+	    		  return _add(element, "html", template, data);
+	    	  };
+	    	  
+	    	  function append(element, template, data) {
+	    		  return _add(element, "append", template, data);
+	    	  };
+	    	  
+	    	  function prepend(element, template, data, fnCallback) {
+	    		  return _add(element, "prepend", template, data);
+	    	  };
+	    	  
+	    	  function insertAfter(element, template, data) {
+	    		  return _add(element, "after", template, data);
+	    	  };
+	    	  
+	    	  function insertBefore(element, template, data) {
+	    		  return _add(element, "before", template, data);
+	    	  };
+	    	  
+	    	  function _add(element, operation, template, data) {
+	    		  var html = ccm.helper.html(template, data)
+	    		  $(element)[operation](html);
 	    		  
-	    		  return appended;
+	    		  return html;
 	    	  };
-	    	  
-	    	  // compile and insert the given html template at the provided index
-	    	  // jQuery doesn't support insert at index out of the box, so i used a tutorial here
-	    	  // url	: http://stackoverflow.com/questions/3562493/jquery-insert-div-as-certain-index
-	    	  // autor 	: Didier Ghys
-	    	  function insertHTML(element, index, template, data) {	  
-	    		  var lastIndex = element.children().size()
-	    		  if (index < 0) {
-	    		    index = Math.max(0, lastIndex + 1 + index)
-	    		  }
-	    		  var appendedElement = appendHTML(element, template, data);
-	    		  if (index < lastIndex) {
-	    			  element.children().eq(index).before(element.children().last())
-	    		  }
-	    		  return appendedElement;
-	    	  }
-	    	  
-	    	  // replace an object in an array with a new one
-	    	  function replaceAggregation(array, index, component) {
-	    		  array[index] = copyObject(component);
-	    	  };
-	    	  
-	    	  // insert a object at index
-	    	  function insertAggregation(array, index, component) {
-	    		  array.splice(index, 0, copyObject(component));
-	    	  };
-	    	  
-	    	  // remove an object at index
-	    	  function removeAggregation(array, index) {
-	    		  array.splice(index, 1);
-	    	  };
-	    	  
-	    	  // Copy object with JSON.parse and JSON.stringify
-	    	  // This is an easy solution and due to the small size of the object no real performance
-	    	  // bottleneck. We coul'd use jQuery.extend or eval() here but jQuery.extend has issues
-	    	  // with copying the whole object and eval() is too dangerous to use. Not worth the effort
-	    	  function copyObject(o) {
-	    		  return JSON.parse(JSON.stringify(o));
-	    	  }
-	      }); 
+	      });
 	};
   }
   
