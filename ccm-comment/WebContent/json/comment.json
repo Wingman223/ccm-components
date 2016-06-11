@@ -3,23 +3,27 @@
 	"comments" 	: [
 		{
 			"name" 		: "David Freud",
+			"guest"		: false,
 			"date" 		: "2016-04-29T16:00:43.500Z",
 			"text" 		: "Ich denke daraus kann man einiges machen. Ich würde empfehlen beim abspeichern den aktuellen Wert zu prüfen nicht das jemand ein Skript injiziert",
 			"replies" 	: [
 				{
 					"name" 		: "Sven Lowe",
+					"guest"		: false,
 					"date" 		: "2016-05-29T15:58:43.500Z",
 					"text" 		: "Gute Idee! Daran hatte ich garnicht gedacht. Dank dir!"
 				}
 			]
 		},
 		{
-			"name" 		: "Anonym",
+			"name" 		: "",
+			"guest"		: true,
 			"date" 		: "2015-05-29T15:58:43.500Z",
 			"text" 		: "Gibt schon einige dieser Art aber ich denke das ist ein guter Ansatz den du weiter verfolgen solltest",
 			"replies" 	: [
 				{
 					"name" 		: "Marko Wirtz",
+					"guest"		: false,
 					"date" 		: "2016-05-30T02:26:43.500Z",
 					"text" 		: "Ja das ganze funktioniert schon ganz gut. Denke mit der nächsten Version wird man auch auf Kommentare antworten können. Freu mich schon darauf"
 				}

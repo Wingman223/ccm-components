@@ -11,8 +11,7 @@
 					"rows" 				: "2",
 					"cols" 				: "18",
 					"inner" 			: "%POSTBOX_INSERTCOMMENT%",
-					"onclick"			: "%onPostboxTextareaClick%",
-					"onfocusout"		: "%onPostboxTextareaFocusout%"
+					"onclick"			: "%onPostboxTextareaClick%"
 				},
 				{
 					"tag" 	: "section",

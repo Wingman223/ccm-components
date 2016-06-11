@@ -61,14 +61,17 @@ ccm.component( {
      */
     self.init = function ( callback ) {
     	
-    	// set localization to de
-    	self.i18n = self.i18n.de
+    	// set localization to the browser language
+    	var userlang 	= (navigator.language || navigator.userLanguage) == "de" ? "de" : "en";
+    	self.i18n 		= self.i18n[userlang];
+    	
+    	//self.i18n = self.i18n.en;
     	
     	// init datastore
-	    /*self.store.del( self.key, function() {
+	    self.store.del( self.key, function() {
 	    	
 	    	console.log("data deleted");
-	    	*/
+	    	
 	    	self.store.get( self.key, function(dataset) {
 	    		
 	    		console.log("got data");
@@ -87,18 +90,12 @@ ccm.component( {
 	    			proceed(dataset);
 	    		}
 	    	});
-	    //});
+	    });
 	    
 	    // when done call callback
 	    function proceed( dataset ) {
 	    	
-	    	// listen to change event of ccm realtime datastore => update own content
-	        self.store.onChange = function () {
-	        	self.render();
-	        };
-	    	
-	    	console.log("initialized!");
-	    	console.log(dataset);
+	    	// ...
 	    	
 	    	callback();
 	    }
@@ -176,22 +173,24 @@ ccm.component( {
 	    	  // PRIVATE
 	    	  
 	    	  function insertPostboxAfter(element) {
-	    		  return insertAfter(element, getTemplate("postbox"), {
+	    		  
+	    		  var postbox = insertAfter(element, getTemplate("postbox"), {
 	    			  // i18n
 	    			  POSTBOX_INSERTCOMMENT			: i18n.POSTBOX_INSERTCOMMENT,
 	    			  POSTBOX_SEND					: i18n.POSTBOX_SEND,
 	    			  POSTBOX_USER_GUEST			: i18n.POSTBOX_USER_GUEST,
 	    			  // events
-	    			  onPostboxTextareaClick 		: function() {
-	    				  console.log("click");
-	    			  },
-	    			  onPostboxTextareaFocusout 	: function() {
-	    				  console.log("focusout");
-	    			  },
+	    			  onPostboxTextareaClick 		: onPostboxTextareaStateChange,
 	    			  onPostboxButtonSubmitClick	: function() {
-	    				  console.log("submit");
+	    				  onPostboxButtonSubmitClick(postbox);
 	    			  }
 	    		  });
+	    		  
+	    		  // textarea
+	    		  var textarea 		= first(postbox, ".textarea");
+	    		  $(textarea).on("focusout"	, onPostboxTextareaStateChange);
+	    		  
+	    		  return postbox;
 	    	  };
 	    	  
 	    	  function appendComment(element, comment) {
@@ -205,52 +204,11 @@ ccm.component( {
 	    			  date 						: convertDateForOutput(date),
 	    			  text 						: comment.text,
 	    			  // events
-	    			  onCommentButtonReplyClick	: function() {
-	    				  console.log("reply");
-	    			  }
+	    			  onCommentButtonReplyClick	: onPostboxButtonSubmitClick
 		    	  };
 	    		  
 	    		  return append(element, getTemplate("comment"), data);
 	    	  };
-	    	  
-	    	  
-	    	  /*
-	    	  function insertPostbox(element, index) {
-	    		  
-	    		  // first append postbox
-	    		  var postbox = insertHTML(element, 1, getTemplate("postbox"), data);
-	    		  
-	    		  // then register events
-	    		  // textarea input
-	    		  var textarea = postbox.children(".textarea").eq(0);
-	    		  textarea.on("click"		, onPostboxClick);
-	    		  textarea.on("focusout"	, onPostboxFocusOut);
-	    		  
-	    		  // submit
-	    		  var submitsection		= postbox.children("section").eq(0).children()
-	    		  var checkbox			= submitsection.eq(1).children().eq(0).children("input").eq(0);
-	    		  var submitbutton		= submitsection.eq(0).children().eq(0);
-	    		  
-	    		  submitbutton.on("click", function(event) {
-	    			  onPostboxSubmit(event, textarea, checkbox);
-	    		  });
-	    		  
-	    		  return postbox;
-	    	  };
-	    	  
-	    	  function appendComment(element, comment) {
-	    		  
-	    		  // get and convert data to appropriate format
-	    		  var date		= convertISODateToDate(comment.date);
-	    		  var data 		= {
-	    			  name : comment.name,
-		    		  date : convertDateForOutput(date),
-		    		  text : comment.text
-		    	  };
-	    		  
-	    		  return appendHTML(element, getTemplate("comment"), data);
-	    	  };
-	    	  */
 	    	  
 	    	  // calculcates the time difference between the given and current date
 	    	  // outputs a string with an appropriate number between
@@ -267,24 +225,31 @@ ccm.component( {
 	    		  var months	= diff.getMonth() - 1;
 	    		  var years		= diff.toISOString().slice(0, 4) - 1970;
 	    		  
+	    		  var i18n		= self.i18n;
+	    		  var text		= i18n.COMMENT_DATE_PREFIX + " ";
+	    		  
 	    		  if( years > 0 ) {
-	    			  return "vor " + years + " " + ( years > 1 ? "Jahre" : "Jahr" );
+	    			  text += years + " " + ( years > 1 ? i18n.COMMENT_DATE_YEARS : i18n.COMMENT_DATE_YEAR );
 	    		  }
 	    		  else if ( months > 0 ) {
-	    			  return "vor " + months + " " + ( months > 1 ? "Monate" : "Monat"); 
+	    			  text += months + " " + ( months > 1 ? i18n.COMMENT_DATE_MONTHS : i18n.COMMENT_DATE_MONTH); 
 	    		  }
 	    		  else if ( days > 0 ) {
-	    			  return "vor " + days + " " + ( days > 1 ? "Tagen" : "Tag"); 
+	    			  text += days + " " + ( days > 1 ? i18n.COMMENT_DATE_DAYS : i18n.COMMENT_DATE_DAY); 
 	    		  }
 	    		  else if ( hours > 0 ) {
-	    			  return "vor " + hours + " " + ( hours > 1 ? "Stunden" : "Stunde");
+	    			  text += hours + " " + ( hours > 1 ? i18n.COMMENT_DATE_HOURS : i18n.COMMENT_DATE_HOUR);
 	    		  }
 	    		  else if ( minutes > 2 ) {
-	    			  return "vor " + minutes + " Minuten";
+	    			  text += minutes + " " + i18n.COMMENT_DATE_HOURS;
 	    		  }
 	    		  else {
-	    			  return "Gerade eben";
+	    			  return i18n.COMMENT_DATE_NOW;
 	    		  }
+	    		  
+	    		  text += " " + i18n.COMMENT_DATE_SUFFIX;
+	    		  
+	    		  return text;
 	    	  };
 	    	  
 	    	  // get html template from json data
@@ -295,86 +260,101 @@ ccm.component( {
 	    	  // --------------------------------------------------------------------
 	    	  // BUSINESS LOGIC
 	    	  
-	    	  function onPostboxClick() {
+	    	  function onPostboxTextareaStateChange(event) {
+	    		  
+	    		  var type = event.type;
+	    		  
 	    		  $(this).toggleClass("inputerror"	, false);
 	    		  
 	    		  // get text and make sure it's not compromised
 	    		  $(this).text(function(index, text) {
-	    			  var text_cleaned = ccm.helper.val(text);
+	    			  var text_cleaned 	= ccm.helper.val(text) || "";
 	    			  
-	    			  if( typeof text_cleaned === "string" && text_cleaned.length > 0 ) {
-	    				  if( text_cleaned === "Kommentar hier eintippen (mindestens 3 Zeichen)" ) {
-	    					  $(this).toggleClass("placeholder"	, false);
-	    					  return "";
-	    				  }
+    				  switch(type) {
+	    				  case "click":
+	    					  if( text_cleaned === self.i18n.POSTBOX_INSERTCOMMENT ) {
+	    	    				  $(this).toggleClass("placeholder"	, false);
+	    	    				  return "";
+	    	    			  }
+	    					  break;
+	    				  case "focusout":
+	    					  if( text_cleaned.length === 0 ) {
+	    	    				  $(this).toggleClass("placeholder"	, true);
+	    	    				  return self.i18n.POSTBOX_INSERTCOMMENT;
+	    	    			  }
+	    					  break;
 	    			  }
 	    		  });
 	    	  };
 	    	  
-	    	  function onPostboxFocusOut() {
-	    		  $(this).toggleClass("inputerror"	, false);
+	    	  function onPostboxButtonSubmitClick(postbox) {
 	    		  
-	    		  // set text when user didn't input any text
-	    		  $(this).text(function(index, text) {
-	    			  var text_cleaned = ccm.helper.val(text);
-	    			  
-	    			  if( typeof text_cleaned === "string" && text_cleaned.length === 0 ) {
-	    				  $(this).toggleClass("placeholder"	, true);
-	    				  return "Kommentar hier eintippen (mindestens 3 Zeichen)";
-	    			  }
-	    		  });
-	    	  };
-	    	  
-	    	  function onPostboxSubmit(event, textarea, checkbox) {
+	    		  var textarea 	= first(postbox, ".textarea");
+	    		  var checkbox	= first(postbox, ":checkbox");
 	    		  
 	    		  textarea.text(function(index, text) {
 	    			  var text_cleaned 	= ccm.helper.val(text);
-	    			  var anonymous		= checkbox.prop("checked");
+	    			  var guest			= (checkbox.prop("checked") == true);
 	    			  
 	    			  if( typeof text_cleaned === "string" && text_cleaned.length > 2 ) {
-	    				  if( text_cleaned !== "Kommentar hier eintippen (mindestens 3 Zeichen)" ) {
-	    					  post(text_cleaned, anonymous);
-	    					  textarea.toggleClass("inputerror", false);
+	    				  if( text_cleaned !== self.i18n.POSTBOX_INSERTCOMMENT ) {
+	    					  post(text_cleaned, guest);
+	    					  $(this).toggleClass("inputerror", false);
 	    				  } else {
-	    					  textarea.toggleClass("inputerror", true);
+	    					  $(this).toggleClass("inputerror", true);
 	    				  }
 	    			  } else {
-	    				  textarea.toggleClass("inputerror", true);
+	    				  $(this).toggleClass("inputerror", true);
 	    			  }
 	    		  });
 	    	  };
 	    	  
-	    	  function post(text, anonymous) {
-	    		  self.store.get( self.key, function(dataset) {
-	    			 
-	    			  var data 	= dataset.data;
-	    			  var user;
+	    	  function post(text, guest) {
+	    		  
+	    		  // post if guest or at least logged in
+	    		  if( guest || isLoggedIn() ) {
 	    			  
-	    			  if( anonymous ) {
-	    				  user	= "Anonym";
-	    			  } else {
-	    				  user	= "Angemeldeter Benutzer";
-	    			  }
-	    			  
-	    			  data.comments.push({
-	    				  name 		: user,
-	    				  date		: (new Date()).toJSON(),
-	    				  text		: text,
-	    				  replies 	: []
+	    			  self.store.get(self.key, function(dataset) {
+	    				  
+	    				  var data = dataset.data;
+	    				  var user = "";
+	    					  
+	    				  if( !guest ) {
+	    					  user = self.user.data().name;
+	    				  }
+	    				  
+	    				  // push new comment into comment array
+	    				  data.comments.push({
+		    				  name 		: user,
+		    				  guest		: guest,
+		    				  date		: (new Date()).toJSON(),
+		    				  text		: text,
+		    				  replies 	: []
+		    			  });
+		    			  
+		    			  // calculate comment count
+		    			  var count = data.comments.length;
+		    			  for( var i=0; i<data.comments.length; i++ ) {
+		    				  count += data.comments[i].replies.length;
+		    			  }
+		    			  
+		    			  dataset.data.count = count;
+		    			  
+		    			  // set and rerender
+		    			  self.store.set( dataset, function() {
+		    				  self.render();
+		    			  });
 	    			  });
-	    			  
-	    			  
-	    			  var count = data.comments.length;
-	    			  for( var i=0; i<data.comments.length; i++ ) {
-	    				  count += data.comments[i].replies.length;
-	    			  }
-	    			  
-	    			  dataset.data.count = count;
-	    			  
-	    			  self.store.set( dataset, function() {
-	    				  self.render();
+	    		  } else {
+	    			  // otherwise login and try again
+	    			  self.user.login(function() {
+	    				  post(text, guest)
 	    			  });
-	    		  });
+	    		  }
+	    	  }
+	    	  
+	    	  function isLoggedIn() {
+	    		  return (self.user.data() !== null);
 	    	  };
 	    	  
 	    	  // --------------------------------------------------------------------
@@ -392,7 +372,7 @@ ccm.component( {
 	    	  };
 	    	  
 	    	  function find(element, selector) {
-	    		  return $(element).children(selector);
+	    		  return $(element).find(selector);
 	    	  };
 	    	  
 	    	  // html operationen
