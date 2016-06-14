@@ -55,8 +55,12 @@ ccm.component( {
 		  if( context ) {
 			  // remove first slash if context exists
 			  path = this._removeLeadingSlash(path);
-			  // attach path to context path
-			  path = context.getPath() + "/" + path;
+			  // attach path if provided. Otherwise just use the context path
+			  if( path.length > 0 ) {
+				  path = context.getPath() + "/" + path;
+			  } else {
+				  path = context.getPath();
+			  }
 		  }
 		  
 		  this.model	= model;
@@ -140,7 +144,7 @@ ccm.component( {
     	
     	// init datastore
     	
-	    // self.store.del( self.key, function() {
+	    self.store.del( self.key, function() {
     	
 	    	self.store.get( self.key, function(dataset) {
 	    		
@@ -152,7 +156,7 @@ ccm.component( {
 	    		}
 	    	});
 	    
-	    // });
+	    });
 	    
 	    // when done call callback
 	    function proceed( dataset ) {
@@ -180,9 +184,6 @@ ccm.component( {
      */
     self.render = function ( callback ) {
     	
-    	var isEdit = 
-    	
-    	
 	      ccm.helper.dataset(self, function( dataset ) {
 	    	  
 	    	  // Data from self.store to display
@@ -201,32 +202,41 @@ ccm.component( {
 	    		  HEADER_NUM_COMMENTS	: i18n.HEADER_NUM_COMMENTS
 	    	  });
 	    	  
-	    	  // add postbox directly after the header
 	    	  var header			= first(section, "h1");
-	    	  var context			= new Context(model, "/data/comments");
-	    	  var postbox			= insertPostboxAfter(header, context);
+	    	  
+	    	  // add postbox directly after the header
+	    	  // the context determines where the answers will be placed afterwards
+	    	  var comments_context	= new Context(model, "/data/comments");
+	    	  var postbox			= insertPostboxAfter(header, comments_context);
 	    	  
 	    	  // now render comments
 	    	  var comments_div 		= first(section, ".comments");
-	    	  var comments			= context.getData();
+	    	  var comments			= comments_context.getData();
 	    		  
 	    	  for( var i=0; i < comments.length; i++ ) {
 	    		  
-	    		  // append comment to the element
-	    		  var comment_context	= new Context(model, i, context);
-	    		  var comment_div		= appendComment(comments_div, comment_context);
-	    		  var replies			= comment_context.getProperty("replies");
+	    		  // FIXME this is a mess but should work. Needs cleanup
+	    		  
+	    		  // we need two context information for the comment
+	    		  // 1.) a context which points to the comment
+	    		  // 2.) a context which points to a location where the postbox will place its comment
+	    		  
+	    		  var comment_context	= new Context(model, i			, comments_context);
+	    		  var replies_context	= new Context(model, "replies"	, comment_context);
+	    		  
+	    		  var comment_div		= appendComment(comments_div, comment_context, replies_context);
+	    		  var replies			= replies_context.getData("replies");
 	    		  
 	    		  // check if there are replies. If yes attach them, too
 	    		  if( replies && replies.length > 0 ) {
 	    			  
 	    			  // get followup data
-	    			  var followup_div 	= first(comment_div, ".followup");
+	    			  var followup_div 		= first(comment_div, ".followup");
 	    			  
 	    			  // append replies
-	    			  for( var j=0; j<replies.length; j++ ) {
-	    				  var reply_context = new Context(model, "replies/" + j, comment_context);
-	    	    		  appendComment(followup_div, reply_context);
+	    			  for( var j=0; j < replies.length; j++ ) {
+	    				  var reply_context = new Context(model, j, replies_context);
+	    	    		  appendComment(followup_div, reply_context, replies_context);
 	    			  }
 	    		  }
 	    	  }
@@ -258,11 +268,11 @@ ccm.component( {
 	    		  return postbox_div;
 	    	  };
 	    	  
-	    	  function appendComment(element, context) {
+	    	  function appendComment(element, context, postbox_context) {
 	    		  
-	    		  var comment		= context.getData();
-	    		  var date			= convertISODateToDate(comment.date);
-	    		  var comment_div 	= append(element, getTemplate("comment"), {
+	    		  var comment			= context.getData();
+	    		  var date				= convertISODateToDate(comment.date);
+	    		  var comment_div 		= append(element, getTemplate("comment"), {
 	    			  // localization
 	    			  COMMENT_BUTTON_REPLY		: i18n.COMMENT_BUTTON_REPLY,
 	    			  COMMENT_BUTTON_CLOSE		: i18n.COMMENT_BUTTON_CLOSE,
@@ -272,10 +282,10 @@ ccm.component( {
 	    			  text 						: comment.text,
 	    			  // events
 	    			  onCommentButtonReplyClick	: function(event) {
-	    				  onCommentButtonReplyClick(event, comment_div, context);
+	    				  onCommentButtonReplyClick(event, comment_div, postbox_context);
 	    			  },
 	    			  onCommentButtonCloseClick : function(event) {
-	    				  onCommentButtonCloseClick(event, comment_div, context);
+	    				  onCommentButtonCloseClick(event, comment_div, postbox_context);
 	    			  }
 	    		  });
 	    		  
@@ -403,7 +413,7 @@ ccm.component( {
 	    	  
 	    	  // ------------------------------------------------------------
 	    	  
-	    	  function onPostboxButtonSubmitClick(event, element, context, temporary) {
+	    	  function onPostboxButtonSubmitClick(event, element, context) {
 	    		  
 	    		  var textarea 	= first(element, ".textarea");
 	    		  var checkbox	= first(element, ":checkbox");
@@ -414,7 +424,7 @@ ccm.component( {
 	    			  
 	    			  if( typeof text_cleaned === "string" && text_cleaned.length > 2 ) {
 	    				  if( text_cleaned !== self.i18n.POSTBOX_INSERTCOMMENT ) {
-	    					  post(text_cleaned, guest);
+	    					  post(context, text_cleaned, guest);
 	    					  $(this).toggleClass("inputerror", false);
 	    				  } else {
 	    					  $(this).toggleClass("inputerror", true);
@@ -425,22 +435,27 @@ ccm.component( {
 	    		  });
 	    	  };
 	    	  
-	    	  function post(text, guest) {
+	    	  function post(context, text, guest) {
 	    		  
 	    		  // post if guest or at least logged in
 	    		  if( guest || isLoggedIn() ) {
 	    			  
 	    			  self.store.get(self.key, function(dataset) {
 	    				  
-	    				  var data = dataset.data;
-	    				  var user = "";
+	    				  // we need to update the data to ensure that no comment is overridden
+	    				  // for this we load the data and give it the same context as the input
+	    				  
+	    				  var model_new		= dataset;
+	    				  var context_new  	= new Context(dataset, "", context);
+	    				  var data 			= context_new.getData();
+	    				  var user 			= "";
 	    					  
 	    				  if( !guest ) {
 	    					  user = self.user.data().name;
 	    				  }
 	    				  
 	    				  // push new comment into comment array
-	    				  data.comments.push({
+	    				  data.unshift({
 		    				  name 		: user,
 		    				  guest		: guest,
 		    				  date		: (new Date()).toJSON(),
@@ -449,9 +464,11 @@ ccm.component( {
 		    			  });
 		    			  
 		    			  // calculate comment count
-		    			  var count = data.comments.length;
-		    			  for( var i=0; i<data.comments.length; i++ ) {
-		    				  count += data.comments[i].replies.length;
+	    				  var comments 	= dataset.data.comments;
+		    			  var count 	= comments.length;
+		    			  
+		    			  for( var i=0; i < comments.length; i++ ) {
+		    				  count += comments[i].replies.length;
 		    			  }
 		    			  
 		    			  dataset.data.count = count;
