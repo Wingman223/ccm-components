@@ -46,6 +46,12 @@ ccm.component( {
 	  
 	  function Context(model, path, context) {
 		  
+		  // make sure path is of type string
+		  if( typeof path !== "string" ) {
+			  path = path + "";
+		  }
+		  
+		  // check if context was provided
 		  if( context ) {
 			  // remove first slash if context exists
 			  path = this._removeLeadingSlash(path);
@@ -178,7 +184,6 @@ ccm.component( {
 	    	  
 	    	  // Data from self.store to display
 	    	  var model 			= dataset;
-	    	  var context			= new Context(model, "/data");
 	    	  // Dynamic components we use for insertion
 	    	  var components		= self.html.component;
 	    	  // i18n model
@@ -189,22 +194,23 @@ ccm.component( {
 	    	  // setup layout
 	    	  var body 		= ccm.helper.element(self);
 	    	  var section 	= set(body, self.html.main, {
-	    		  number 				: context.getProperty("count"),
+	    		  number 				: model.data.count,
 	    		  HEADER_NUM_COMMENTS	: i18n.HEADER_NUM_COMMENTS
 	    	  });
 	    	  
 	    	  // add postbox directly after the header
-	    	  var header		= first(section, "h1");
-	    	  var postbox		= insertPostboxAfter(header);
+	    	  var header			= first(section, "h1");
+	    	  var context			= new Context(model, "/data/comments");
+	    	  var postbox			= insertPostboxAfter(header, context);
 	    	  
 	    	  // now render comments
-	    	  var comments_div 	= first(section, ".comments");
-	    	  var comments		= context.getProperty("comments");
+	    	  var comments_div 		= first(section, ".comments");
+	    	  var comments			= context.getData();
 	    		  
 	    	  for( var i=0; i < comments.length; i++ ) {
 	    		  
 	    		  // append comment to the element
-	    		  var comment_context	= new Context(model, "comments/" + i, context);
+	    		  var comment_context	= new Context(model, i, context);
 	    		  var comment_div		= appendComment(comments_div, comment_context);
 	    		  var replies			= comment_context.getProperty("replies");
 	    		  
@@ -228,32 +234,32 @@ ccm.component( {
 	    	  // ---------------------------------------------------------------------------
 	    	  // PRIVATE
 	    	  
-	    	  function insertPostboxAfter(element) {
+	    	  function insertPostboxAfter(element, context) {
 	    		  
-	    		  var postbox = insertAfter(element, getTemplate("postbox"), {
+	    		  var postbox_div = insertAfter(element, getTemplate("postbox"), {
 	    			  // i18n
 	    			  POSTBOX_INSERTCOMMENT			: i18n.POSTBOX_INSERTCOMMENT,
 	    			  POSTBOX_SEND					: i18n.POSTBOX_SEND,
 	    			  POSTBOX_USER_GUEST			: i18n.POSTBOX_USER_GUEST,
 	    			  // events
 	    			  onPostboxTextareaClick 		: onPostboxTextareaStateChange,
-	    			  onPostboxButtonSubmitClick	: function() {
-	    				  onPostboxButtonSubmitClick(postbox);
+	    			  onPostboxButtonSubmitClick	: function(event) {
+	    				  onPostboxButtonSubmitClick(event, postbox_div, context);
 	    			  }
 	    		  });
 	    		  
 	    		  // textarea
-	    		  var textarea = first(postbox, ".textarea");
+	    		  var textarea = first(postbox_div, ".textarea");
 	    		  $(textarea).on("focusout"	, onPostboxTextareaStateChange);
 	    		  
-	    		  return postbox;
+	    		  return postbox_div;
 	    	  };
 	    	  
 	    	  function appendComment(element, context) {
 	    		  
-	    		  var comment	= context.getData();
-	    		  var date		= convertISODateToDate(comment.date);
-	    		  var data 		= {
+	    		  var comment		= context.getData();
+	    		  var date			= convertISODateToDate(comment.date);
+	    		  var comment_div 	= append(element, getTemplate("comment"), {
 	    			  // localization
 	    			  COMMENT_BUTTON_REPLY		: i18n.COMMENT_BUTTON_REPLY,
 	    			  // data
@@ -262,11 +268,11 @@ ccm.component( {
 	    			  text 						: comment.text,
 	    			  // events
 	    			  onCommentButtonReplyClick	: function(event) {
-	    				  onCommentButtonReplyClick(event, context);
+	    				  onCommentButtonReplyClick(event, comment_div, context);
 	    			  }
-		    	  };
+	    		  });
 	    		  
-	    		  return append(element, getTemplate("comment"), data); 
+	    		  return comment_div;
 	    	  };
 	    	  
 	    	  // calculcates the time difference between the given and current date
@@ -347,14 +353,18 @@ ccm.component( {
 	    		  });
 	    	  };
 	    	  
-	    	  function onCommentButtonReplyClick(event) {
-	    		  console.log(event);
+	    	  function onCommentButtonReplyClick(event, element, context) {
+	    		  
+	    		  var footer 	= first(element, ".footer");
+	    		  var postbox 	= insertPostboxAfter(footer, context);
+	    		  
+	    		  console.log(postbox);
 	    	  };
 	    	  
-	    	  function onPostboxButtonSubmitClick(postbox) {
+	    	  function onPostboxButtonSubmitClick(event, element, context) {
 	    		  
-	    		  var textarea 	= first(postbox, ".textarea");
-	    		  var checkbox	= first(postbox, ":checkbox");
+	    		  var textarea 	= first(element, ".textarea");
+	    		  var checkbox	= first(element, ":checkbox");
 	    		  
 	    		  textarea.text(function(index, text) {
 	    			  var text_cleaned 	= ccm.helper.val(text);
