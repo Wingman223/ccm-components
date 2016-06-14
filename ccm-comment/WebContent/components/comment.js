@@ -168,7 +168,7 @@ ccm.component( {
     	
     	// init datastore
     	
-	    self.store.del( self.key, function() {
+	    //self.store.del( self.key, function() {
     	
 	    	self.store.get( self.key, function(dataset) {
 	    		
@@ -179,8 +179,8 @@ ccm.component( {
 	    			proceed(dataset);
 	    		}
 	    	});
-	    
-	    });
+
+	    //});
 	    
 	    // when done call callback
 	    function proceed( dataset ) {
