@@ -25,7 +25,7 @@ ccm.component( {
 	key		: 'comment'		,
     html	: [ ccm.load	, './json/comment_html.json' ],
     mock	: [ ccm.load	, './json/comment.json' ],
-    i18n	: [ ccm.load	, './json/i18n.json' ],
+    i18n	: [ ccm.load	, './json/comment_i18n.json' ],
     store	: [ ccm.store	, { url: 'ws://ccm2.inf.h-brs.de/index.js', store: 'comment' }],
     user	: [ ccm.instance, 'https://kaul.inf.h-brs.de/ccm/components/user2.js' ],
     style	: [ ccm.load	, './css/comment.css' ]
@@ -39,6 +39,71 @@ ccm.component( {
    * @class
    */
   Instance: function () {
+	  
+	  
+	  // --------------------------------------------------------------
+	  // model context
+	  
+	  function Context(model, path, context) {
+		  
+		  if( context ) {
+			  // remove first slash if context exists
+			  path = this._removeLeadingSlash(path);
+			  // attach path to context path
+			  path = context.getPath() + "/" + path;
+		  }
+		  
+		  this.model	= model;
+		  this.path		= path;
+	  };
+	  
+	  Context.prototype.getModel = function() {
+		  return this.model;
+	  };
+	  
+	  Context.prototype.getPath = function() {
+		  return this.path;
+	  };
+	  
+	  // gibt das gesamte datenset vom angegebenen pfad zurück
+	  Context.prototype.getData = function() {
+		  return this._traverse(this.getPath());
+	  };
+	  
+	  Context.prototype.getProperty = function(property) {
+		  return this._traverse(this.getPath() + "/" + property);
+	  };
+	  
+	  Context.prototype._traverse = function(path) {
+		  
+		  // first make sure to remove the leading slash
+		  // because function returns it as first element in array
+		  var path 	= this._removeLeadingSlash(path);
+		  // now split at "/"
+		  var paths = path.split("/");
+		  var data	= this.getModel();
+		  
+		  // cycle through the model to get desired data
+		  for( var i=0; i<paths.length; i++ ) {
+			  // make sure the path is reachable
+			  if( data.hasOwnProperty(paths[i]) && data[paths[i]] ) {
+				  data = data[paths[i]];
+			  } else {
+				  // otherwise reset data
+				  data = null;
+				  break;
+			  }
+		  }
+		  
+		  return data;
+	  };
+	  
+	  Context.prototype._removeLeadingSlash = function(path) {
+		  if ( path.indexOf("/") === 0 ) {
+			  path = path.substring(1, path.length);
+		  }
+		  return path;
+	  };
 
     /*------------------------------------- private and public instance members --------------------------------------*/
 
@@ -63,40 +128,28 @@ ccm.component( {
     	
     	// set localization to the browser language
     	var userlang 	= (navigator.language || navigator.userLanguage) == "de" ? "de" : "en";
-    	self.i18n 		= self.i18n[userlang];
+    	//self.i18n 		= self.i18n[userlang];
     	
-    	//self.i18n = self.i18n.en;
+    	self.i18n = self.i18n.en;
     	
     	// init datastore
-	    self.store.del( self.key, function() {
-	    	
-	    	console.log("data deleted");
-	    	
+    	
+	    // self.store.del( self.key, function() {
+    	
 	    	self.store.get( self.key, function(dataset) {
 	    		
-	    		console.log("got data");
-	    		console.log(dataset);
-	    		
 	    		if( dataset === null ) {
-	    			
 	    			var mockdata = { key : self.key, data : self.mock };
-	    			
-	    			console.log("setting new data");
-	    			console.log(mockdata);
-	    			
 	    			self.store.set(mockdata, proceed);
 	    		} else {
-	    			console.log("data ok");
 	    			proceed(dataset);
 	    		}
 	    	});
-	    });
+	    
+	    // });
 	    
 	    // when done call callback
 	    function proceed( dataset ) {
-	    	
-	    	// ...
-	    	
 	    	callback();
 	    }
     };
@@ -124,7 +177,8 @@ ccm.component( {
 	      ccm.helper.dataset(self, function( dataset ) {
 	    	  
 	    	  // Data from self.store to display
-	    	  var data 				= dataset.data;
+	    	  var model 			= dataset;
+	    	  var context			= new Context(model, "/data");
 	    	  // Dynamic components we use for insertion
 	    	  var components		= self.html.component;
 	    	  // i18n model
@@ -135,33 +189,35 @@ ccm.component( {
 	    	  // setup layout
 	    	  var body 		= ccm.helper.element(self);
 	    	  var section 	= set(body, self.html.main, {
-	    		  number 				: data.count,
+	    		  number 				: context.getProperty("count"),
 	    		  HEADER_NUM_COMMENTS	: i18n.HEADER_NUM_COMMENTS
 	    	  });
 	    	  
 	    	  // add postbox directly after the header
-	    	  var header	= first(section, "h1");
-	    	  var postbox	= insertPostboxAfter(header);
+	    	  var header		= first(section, "h1");
+	    	  var postbox		= insertPostboxAfter(header);
 	    	  
 	    	  // now render comments
-	    	  var comments	= first(section, ".comments");
-	    	  for( var i=0; i < data.comments.length; i++ ) {
+	    	  var comments_div 	= first(section, ".comments");
+	    	  var comments		= context.getProperty("comments");
+	    		  
+	    	  for( var i=0; i < comments.length; i++ ) {
 	    		  
 	    		  // append comment to the element
-	    		  var comment		= data.comments[i];
-	    		  var comment_div	= appendComment(comments, comment);
+	    		  var comment_context	= new Context(model, "comments/" + i, context);
+	    		  var comment_div		= appendComment(comments_div, comment_context);
+	    		  var replies			= comment_context.getProperty("replies");
 	    		  
 	    		  // check if there are replies. If yes attach them, too
-	    		  if( comment.replies && comment.replies.length > 0 ) {
+	    		  if( replies && replies.length > 0 ) {
 	    			  
 	    			  // get followup data
 	    			  var followup_div 	= first(comment_div, ".followup");
-	    			  var replies		= comment.replies;
 	    			  
 	    			  // append replies
-	    			  for( var j=0; j < replies.length; j++ ) {
-	    				  var reply 	= replies[j];
-	    	    		  appendComment(followup_div, reply);
+	    			  for( var j=0; j<replies.length; j++ ) {
+	    				  var reply_context = new Context(model, "replies/" + j, comment_context);
+	    	    		  appendComment(followup_div, reply_context);
 	    			  }
 	    		  }
 	    	  }
@@ -187,27 +243,30 @@ ccm.component( {
 	    		  });
 	    		  
 	    		  // textarea
-	    		  var textarea 		= first(postbox, ".textarea");
+	    		  var textarea = first(postbox, ".textarea");
 	    		  $(textarea).on("focusout"	, onPostboxTextareaStateChange);
 	    		  
 	    		  return postbox;
 	    	  };
 	    	  
-	    	  function appendComment(element, comment) {
+	    	  function appendComment(element, context) {
 	    		  
+	    		  var comment	= context.getData();
 	    		  var date		= convertISODateToDate(comment.date);
 	    		  var data 		= {
 	    			  // localization
 	    			  COMMENT_BUTTON_REPLY		: i18n.COMMENT_BUTTON_REPLY,
 	    			  // data
-	    			  name 						: comment.name,
+	    			  name 						: comment.guest ? i18n.POSTBOX_USER_GUEST : comment.name,
 	    			  date 						: convertDateForOutput(date),
 	    			  text 						: comment.text,
 	    			  // events
-	    			  onCommentButtonReplyClick	: onPostboxButtonSubmitClick
+	    			  onCommentButtonReplyClick	: function(event) {
+	    				  onCommentButtonReplyClick(event, context);
+	    			  }
 		    	  };
 	    		  
-	    		  return append(element, getTemplate("comment"), data);
+	    		  return append(element, getTemplate("comment"), data); 
 	    	  };
 	    	  
 	    	  // calculcates the time difference between the given and current date
@@ -216,6 +275,7 @@ ccm.component( {
 	    	  // Used tutorial : http://stackoverflow.com/questions/17732897/difference-between-two-dates-in-years-months-days-in-javascript
 	    	  // from Rajeev P Nadig
 	    	  function convertDateForOutput(date) {
+	    		  
 	    		  var curr		= new Date();
 	    		  var diff		= new Date(curr - date);
 	    		  
@@ -285,6 +345,10 @@ ccm.component( {
 	    					  break;
 	    			  }
 	    		  });
+	    	  };
+	    	  
+	    	  function onCommentButtonReplyClick(event) {
+	    		  console.log(event);
 	    	  };
 	    	  
 	    	  function onPostboxButtonSubmitClick(postbox) {
@@ -375,6 +439,7 @@ ccm.component( {
 	    		  return $(element).find(selector);
 	    	  };
 	    	  
+	    	  // --------------------------------------------------------------
 	    	  // html operationen
 	    	  
 	    	  function set(element, template, data) {
@@ -431,7 +496,5 @@ ccm.component( {
    * @property {ccm.key} key - dataset key
    * ...
    */
-  
-  // ...
 
 } );

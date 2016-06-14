@@ -29,7 +29,7 @@
 									"onclick"	: "%onPostboxButtonSubmitClick%"
 								}
 							]
-						}, 
+						},
 						{
 							"tag" 	: "p",
 							"inner" : [
