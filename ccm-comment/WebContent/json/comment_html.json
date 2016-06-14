@@ -116,8 +116,31 @@
 		"tag" 	: "section",
 		"inner" : [
 			{
-				"tag" 	: "h1",
-				"inner" : "%number% %HEADER_NUM_COMMENTS%"
+				"tag" 	: "div",
+				"class"	: "header",
+				"inner"	: [
+					{
+						"tag" 	: "h1",
+						"class"	: "header",
+						"inner" : "%number% %HEADER_NUM_COMMENTS%"
+					},
+					{
+						"tag" 		: "select",
+						"onchange"	: "%onLocalizationSelectionChanged%",
+						"inner" 	: [
+							{
+								"tag" 	: "option",
+								"value"	: "deDE",
+								"inner" : "Deutsch"
+							},
+							{
+								"tag" 	: "option",
+								"value" : "enEN",
+								"inner" : "Englisch"
+							}
+						]
+					}
+				]
 			},
 			{
 				"tag" 	: "div",

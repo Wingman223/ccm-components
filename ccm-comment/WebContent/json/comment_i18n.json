@@ -1,5 +1,5 @@
 {
-	"de" : {
+	"deDE" : {
 		"HEADER_NUM_COMMENTS"	: "Kommentare",
 		"POSTBOX_INSERTCOMMENT" : "Kommentar hier eintippen (mindestens 3 Zeichen)",
 		"POSTBOX_SEND"			: "Abschicken",
@@ -19,7 +19,7 @@
 		"COMMENT_DATE_YEAR"		: "Jahr",
 		"COMMENT_DATE_YEARS"	: "Jahren"
 	},
-	"en" : {
+	"enEN" : {
 		"HEADER_NUM_COMMENTS"	: "Comments",
 		"POSTBOX_INSERTCOMMENT" : "Insert comment here (at least 3 characters)",
 		"POSTBOX_SEND"			: "Send",

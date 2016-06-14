@@ -117,14 +117,38 @@ ccm.component( {
 
     /*------------------------------------- private and public instance members --------------------------------------*/
 
+	  
+	  
     /**
      * @summary own context
      * @private
      */
     var self = this;
-
-    // ...
-
+    var currLocalization;
+    
+    function onLocalizationSelectionChanged(event) {
+    	var countryCode = event.target.value;
+    	setLocalization(countryCode);
+    	
+    	self.render();
+    };
+    
+    function setLocalization(countryCode) {
+    	
+    	// FIXME save localization
+    	if(!self.i18nSave) {
+    		self.i18nSave = self.i18n;
+    	}
+    	
+    	// set and save for rerender
+    	self.i18n 			= self.i18nSave[countryCode];
+    	currLocalization 	= countryCode;
+    };
+    
+    function getBrowserLanguage() {
+    	return (navigator.language || navigator.userLanguage) == "deDE" ? "deDE" : "enEN";
+    };
+    
     /*------------------------------------------- public instance methods --------------------------------------------*/
 
     /**
@@ -136,11 +160,11 @@ ccm.component( {
      */
     self.init = function ( callback ) {
     	
-    	// set localization to the browser language
-    	var userlang 	= (navigator.language || navigator.userLanguage) == "de" ? "de" : "en";
-    	//self.i18n 		= self.i18n[userlang];
-    	
-    	self.i18n = self.i18n.en;
+    	// set localization if not set already
+    	if(!currLocalization) {
+    		var countryCode	= getBrowserLanguage();
+        	setLocalization(countryCode);
+    	}
     	
     	// init datastore
     	
@@ -163,7 +187,7 @@ ccm.component( {
 	    	callback();
 	    }
     };
-
+    
     /**
      * @summary when <i>ccm</i> instance is ready
      * @description
@@ -198,11 +222,18 @@ ccm.component( {
 	    	  // setup layout
 	    	  var body 		= ccm.helper.element(self);
 	    	  var section 	= set(body, self.html.main, {
-	    		  number 				: model.data.count,
-	    		  HEADER_NUM_COMMENTS	: i18n.HEADER_NUM_COMMENTS
+	    		  number 							: model.data.count,
+	    		  HEADER_NUM_COMMENTS				: i18n.HEADER_NUM_COMMENTS,
+	    		  onLocalizationSelectionChanged	: function(event) {
+	    			  onLocalizationSelectionChanged(event);
+	    		  }
 	    	  });
 	    	  
-	    	  var header			= first(section, "h1");
+	    	  var header			= first(section, "div");
+	    	  
+	    	  // for demo. Preselect localization from browser
+	    	  var select			= first(header, "select");
+	    	  $(select).children("option[value=" + currLocalization + "]").attr('selected', 'selected');
 	    	  
 	    	  // add postbox directly after the header
 	    	  // the context determines where the answers will be placed afterwards
