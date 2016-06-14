@@ -94,6 +94,13 @@
 							"href" 		: "#",
 							"inner" 	: "%COMMENT_BUTTON_REPLY%",
 							"onclick" 	: "%onCommentButtonReplyClick%"
+						},
+						{
+							"tag" 		: "a",
+							"class" 	: "close",
+							"href" 		: "#",
+							"inner" 	: "%COMMENT_BUTTON_CLOSE%",
+							"onclick" 	: "%onCommentButtonCloseClick%"
 						}
 					]
 				},

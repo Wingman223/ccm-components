@@ -180,6 +180,9 @@ ccm.component( {
      */
     self.render = function ( callback ) {
     	
+    	var isEdit = 
+    	
+    	
 	      ccm.helper.dataset(self, function( dataset ) {
 	    	  
 	    	  // Data from self.store to display
@@ -262,6 +265,7 @@ ccm.component( {
 	    		  var comment_div 	= append(element, getTemplate("comment"), {
 	    			  // localization
 	    			  COMMENT_BUTTON_REPLY		: i18n.COMMENT_BUTTON_REPLY,
+	    			  COMMENT_BUTTON_CLOSE		: i18n.COMMENT_BUTTON_CLOSE,
 	    			  // data
 	    			  name 						: comment.guest ? i18n.POSTBOX_USER_GUEST : comment.name,
 	    			  date 						: convertDateForOutput(date),
@@ -269,6 +273,9 @@ ccm.component( {
 	    			  // events
 	    			  onCommentButtonReplyClick	: function(event) {
 	    				  onCommentButtonReplyClick(event, comment_div, context);
+	    			  },
+	    			  onCommentButtonCloseClick : function(event) {
+	    				  onCommentButtonCloseClick(event, comment_div, context);
 	    			  }
 	    		  });
 	    		  
@@ -353,15 +360,50 @@ ccm.component( {
 	    		  });
 	    	  };
 	    	  
+	    	  // ------------------------------------------------------------
+	    	  // --- POSTBOX REPLY
+	    	  
+	    	  // could be put into event but i'm too lazy atm
+	    	  var temp_postbox = null;
+	    	  
 	    	  function onCommentButtonReplyClick(event, element, context) {
 	    		  
-	    		  var footer 	= first(element, ".footer");
-	    		  var postbox 	= insertPostboxAfter(footer, context);
+	    		  // close old postbox if one is remaining
+	    		  closePostbox();
 	    		  
-	    		  console.log(postbox);
+	    		  // now create a new one
+	    		  var footer = first(element, ".footer");
+	    		  $(footer).toggleClass("isreplying", true);
+	    		  
+	    		  var postbox 	= insertPostboxAfter(footer, context);
+	    		  temp_postbox 	= {
+	    			  footer 	: footer,
+	    			  postbox	: postbox
+	    		  }
 	    	  };
 	    	  
-	    	  function onPostboxButtonSubmitClick(event, element, context) {
+	    	  function onCommentButtonCloseClick(event, element, context) {
+	    		  closePostbox();
+	    	  };
+	    	  
+	    	  function closePostbox() {
+	    		  
+	    		  // we can only close temporary postboxes
+	    		  if( temp_postbox ) {
+	    			  
+	    			  var footer 	= temp_postbox.footer;
+	    			  var postbox 	= temp_postbox.postbox;
+	    			  
+		    		  $(footer).toggleClass("isreplying", false);
+		    		  postbox.remove();
+	    			  
+	    			  temp_postbox = null;
+	    		  }
+	    	  };
+	    	  
+	    	  // ------------------------------------------------------------
+	    	  
+	    	  function onPostboxButtonSubmitClick(event, element, context, temporary) {
 	    		  
 	    		  var textarea 	= first(element, ".textarea");
 	    		  var checkbox	= first(element, ":checkbox");

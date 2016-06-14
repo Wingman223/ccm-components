@@ -5,6 +5,7 @@
 		"POSTBOX_SEND"			: "Abschicken",
 		"POSTBOX_USER_GUEST"	: "Gast",
 		"COMMENT_BUTTON_REPLY"	: "Antworten",
+		"COMMENT_BUTTON_CLOSE"	: "Schließen",
 		
 		"COMMENT_DATE_NOW"		: "Gerade eben",
 		"COMMENT_DATE_PREFIX"	: "vor",
@@ -24,6 +25,7 @@
 		"POSTBOX_SEND"			: "Send",
 		"POSTBOX_USER_GUEST"	: "Guest",
 		"COMMENT_BUTTON_REPLY"	: "Reply",
+		"COMMENT_BUTTON_CLOSE"	: "Close",
 		
 		"COMMENT_DATE_NOW"		: "just now",
 		"COMMENT_DATE_PREFIX"	: "",

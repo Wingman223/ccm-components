@@ -133,13 +133,29 @@
 	text-align			: justify;
 }
 
-.ccm-comment .comment>.footer>.reply {
+.ccm-comment .comment>.followup {
+	padding-left		: 4em;
+}
+
+.ccm-comment .comment>.footer>a {
 	text-decoration		: none;
 	font-weight			: bold;
 	font-size			: .8em;
 	color				: #00aac2;
 }
 
-.ccm-comment .comment>.followup {
-	padding-left		: 4em;
+.ccm-comment .comment>.footer.isreplying>.close {
+	display				: block;
+}
+
+.ccm-comment .comment>.footer>.close {
+	display				: none;
+}
+
+.ccm-comment .comment>.footer>.reply {
+	display				: block;
+}
+
+.ccm-comment .comment>.footer.isreplying>.reply {
+	display				: none;
 }
