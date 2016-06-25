@@ -1,0 +1,13 @@
+.ccm-comment{font:14px "Helvetica Neue",Helvetica,Arial,sans-serif;color:black;padding:1em;max-width:48em}
+.ccm-comment .header>h1{display:inline-block;margin-right:1em;margin-bottom:0;color:#555;font-weight:bold}
+.ccm-comment .postbox{margin-top:1em;margin-bottom:3em}.ccm-comment .textarea{min-height:3em;max-height:18em;overflow-y:auto;padding:1em;margin-bottom:.8em;border:1px solid rgba(0,0,0,0.2);box-shadow:0 1px 2px rgba(0,0,0,0.2);border-radius:3px}
+.ccm-comment .textarea:focus{border-color:rgba(0,0,0,0.8)}.ccm-comment .placeholder{color:#AAA}
+.ccm-comment .inputerror{border:1px solid red}.ccm-comment .form-submit>p{display:inline-block;height:2em;margin:0;float:right;margin-left:1em;vertical-align:middle}
+.ccm-comment .form-submit>p>input{width:12em;height:2em;background-color:#f3f3f3;border:1px solid #d8d8d8;border-radius:3px;outline:0}
+.ccm-comment .form-submit>p>input:hover{background-color:#d6d6d6}.ccm-comment .form-submit>p>input:active{background-color:#f3f3f3}
+.ccm-comment .comment{margin:1em 0 1em 0;padding-top:1em}.ccm-comment .comment:not(:first-of-type){border-top:1px solid rgba(0,0,0,0.1)}
+.ccm-comment .followup>.comment{border-top:1px solid rgba(0,0,0,0.1)}.ccm-comment .comment>.meta{color:gray}
+.ccm-comment .comment>.meta>.spacer{padding:0 .5em 0 .5em}.ccm-comment .comment>.text{margin:.4em 0 .4em 0;text-align:justify}
+.ccm-comment .comment>.followup{padding-left:4em}.ccm-comment .comment>.footer>a{text-decoration:none;font-weight:bold;font-size:.8em;color:#00aac2}
+.ccm-comment .comment>.footer.isreplying>.close{display:block}.ccm-comment .comment>.footer>.close{display:none}
+.ccm-comment .comment>.footer>.reply{display:block}.ccm-comment .comment>.footer.isreplying>.reply{display:none}
