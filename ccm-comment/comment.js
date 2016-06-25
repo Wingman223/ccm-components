@@ -23,12 +23,12 @@ ccm.component( {
    */
   config: {
 	key		: 'comment'		,
-    html	: [ ccm.load	, './json/comment_html.json' ],
-    mock	: [ ccm.load	, './json/comment.json' ],
-    i18n	: [ ccm.load	, './json/comment_i18n.json' ],
+    html	: [ ccm.load	, 'comment_html.json' ],
+    mock	: [ ccm.load	, 'comment_mock.json' ],
+    i18n	: [ ccm.load	, 'comment_i18n.json' ],
+    style	: [ ccm.load	, 'comment.css' ],
     store	: [ ccm.store	, { url: 'ws://ccm2.inf.h-brs.de/index.js', store: 'comment' }],
-    user	: [ ccm.instance, 'https://kaul.inf.h-brs.de/ccm/components/user2.js' ],
-    style	: [ ccm.load	, './css/comment.css' ]
+    user	: [ ccm.instance, 'https://kaul.inf.h-brs.de/ccm/components/user2.js' ]
   },
 
   /*-------------------------------------------- public component classes --------------------------------------------*/
