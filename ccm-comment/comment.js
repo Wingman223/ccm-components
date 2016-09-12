@@ -23,10 +23,10 @@ ccm.component( {
    */
   config: {
 	key		: 'comment'		,
-    html	: [ ccm.load	, '../comment_html.json' ],
-    mock	: [ ccm.load	, '../comment_mock.json' ],
-    i18n	: [ ccm.load	, '../comment_i18n.json' ],
-    style	: [ ccm.load	, '../comment.css' ],
+    html	: [ ccm.load	, 'comment_html.json' ],
+    mock	: [ ccm.load	, 'comment_mock.json' ],
+    i18n	: [ ccm.load	, 'comment_i18n.json' ],
+    style	: [ ccm.load	, 'comment.css' ],
     store	: [ ccm.store	, { url: 'ws://ccm2.inf.h-brs.de/index.js', store: 'comment' }],
     user	: [ ccm.instance, 'https://kaul.inf.h-brs.de/ccm/components/user2.js' ]
   },
@@ -53,6 +53,12 @@ ccm.component( {
 		  
 		  // check if context was provided
 		  if( context ) {
+			  
+			  if( !context.getPath ) {
+				  console.log(context);
+				  throw new Error("Context provided but without getPath?");
+			  }
+			  
 			  // remove first slash if context exists
 			  path = this._removeLeadingSlash(path);
 			  // attach path if provided. Otherwise just use the context path
@@ -116,9 +122,7 @@ ccm.component( {
 	  };
 
     /*------------------------------------- private and public instance members --------------------------------------*/
-
-	  
-	  
+ 
     /**
      * @summary own context
      * @private
@@ -146,7 +150,19 @@ ccm.component( {
     };
     
     function getBrowserLanguage() {
-    	return (navigator.language || navigator.userLanguage) == "deDE" ? "deDE" : "enEN";
+    	
+    	var sLang = (navigator.language || navigator.userLanguage);
+    	
+    	// check if the returned browser language is valid
+    	if( typeof sLang === "string" && sLang.length > 0 ) {
+    		// convert to lower case and check if it contains "en"
+    		sLang = sLang.toLowerCase();
+    		return sLang.indexOf("en") === -1 ? "deDE" : "enEN";
+    	} else {
+    		// not valid so fall back to deDE
+    		console.warn("Could not retrieve browser language. Falling back to deDE");
+    		return "deDE";
+    	}
     };
     
     /*------------------------------------------- public instance methods --------------------------------------------*/
@@ -167,8 +183,11 @@ ccm.component( {
     	}
     	
     	// init datastore
-    	
-	    //self.store.del( self.key, function() {
+    	// due to changes in the datastore logic in ccm 6.3.0, calling get and set no longer
+    	// works during init. Moved to "initDatastore" and is now called on the first render
+    	// operation ( which may cause delay )
+    	/*
+	    self.store.del( self.key, function() {
     	
 	    	self.store.get( self.key, function(dataset) {
 	    		
@@ -179,13 +198,15 @@ ccm.component( {
 	    			proceed(dataset);
 	    		}
 	    	});
-
-	    //});
+	    });
 	    
 	    // when done call callback
 	    function proceed( dataset ) {
 	    	callback();
 	    }
+	    */
+    	
+    	callback();
     };
     
     /**
@@ -197,9 +218,27 @@ ccm.component( {
      */
     self.ready = function ( callback ) {
     	
-    	// ...
+    	//...
     	
-    	callback();
+	    callback();
+    };
+    
+    self.initDatastore = function() {
+    	
+    	if( !self.bStoreInitialized ) {
+    		
+	    	//self.store.del( self.key, function() {
+		    	self.store.get( self.key, function(dataset) {
+		    		
+		    		if( dataset === null ) {
+		    			var mockdata = { key : self.key, data : self.mock };
+		    			self.store.set(mockdata/*, proceed*/);
+		    		}
+		    		
+		    		self.bStoreInitialized = true;
+		    	});
+		    //});
+    	}
     };
 
     /**
@@ -208,8 +247,10 @@ ccm.component( {
      */
     self.render = function ( callback ) {
     	
-	      ccm.helper.dataset(self, function( dataset ) {
-	    	  
+    	self.initDatastore();
+    	
+	    ccm.helper.dataset(self, function( dataset ) {
+	    	
 	    	  // Data from self.store to display
 	    	  var model 			= dataset;
 	    	  // Dynamic components we use for insertion
@@ -336,7 +377,7 @@ ccm.component( {
 	    		  var minutes	= diff.getMinutes();
 	    		  var hours		= diff.getHours() - 1;
 	    		  var days		= diff.getDate() - 1;
-	    		  var months	= diff.getMonth() - 1;
+	    		  var months	= diff.getMonth();
 	    		  var years		= diff.toISOString().slice(0, 4) - 1970;
 	    		  
 	    		  var i18n		= self.i18n;
@@ -355,7 +396,7 @@ ccm.component( {
 	    			  text += hours + " " + ( hours > 1 ? i18n.COMMENT_DATE_HOURS : i18n.COMMENT_DATE_HOUR);
 	    		  }
 	    		  else if ( minutes > 2 ) {
-	    			  text += minutes + " " + i18n.COMMENT_DATE_HOURS;
+	    			  text += minutes + " " + i18n.COMMENT_DATE_MINUTES;
 	    		  }
 	    		  else {
 	    			  return i18n.COMMENT_DATE_NOW;
@@ -384,7 +425,7 @@ ccm.component( {
 	    		  $(this).text(function(index, text) {
 	    			  var text_cleaned 	= ccm.helper.val(text) || "";
 	    			  
-    				  switch(type) {
+					  switch(type) {
 	    				  case "click":
 	    					  if( text_cleaned === self.i18n.POSTBOX_INSERTCOMMENT ) {
 	    	    				  $(this).toggleClass("placeholder"	, false);
@@ -512,7 +553,7 @@ ccm.component( {
 	    		  } else {
 	    			  // otherwise login and try again
 	    			  self.user.login(function() {
-	    				  post(text, guest)
+	    				  post(context, text, guest)
 	    			  });
 	    		  }
 	    	  }
