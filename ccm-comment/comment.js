@@ -1,8 +1,14 @@
 /**
- * @overview comment functionality for <i>ccm</i> component
- * @author Patrick Reif <patrick.reif@inf.h-brs.de>
- * @copyright Copyright (c) 2015-2016 Bonn-Rhein-Sieg University of Applied Sciences
- * @license The MIT License (MIT)
+ * @overview 	Comment component written for the <i>ccm</i> framework during master course web engineering 2016
+ * 				at Bonn-Rhein-Sieg University. Also see {@link http://akless.github.io/ccm-developer/api/ccm/index.html}
+ * 				for a detailed documentation about the <i>ccm</i> framework.
+ * 
+ * 				Offers the possibility to add and reply to comments. Can be embedded in any site to be used alongside
+ * 				other components (approach to componentize the web).
+ * 
+ * @author 		Patrick Reif <patrick.reif@inf.h-brs.de>
+ * @copyright 	Copyright (c) 2016 Bonn-Rhein-Sieg University of Applied Sciences
+ * @license 	The MIT License (MIT)
  */
 
 ccm.component( {
@@ -10,16 +16,16 @@ ccm.component( {
   /*-------------------------------------------- public component members --------------------------------------------*/
 
   /**
-   * @summary component name
-   * @memberOf ccm.components.blank
+   * @summary name of the component
+   * @memberOf ccm.components.ccm_comment
    * @type {ccm.name}
    */
   name: 'comment',
 
   /**
    * @summary default instance configuration
-   * @memberOf ccm.components.blank
-   * @type {ccm.components.blank.config}
+   * @memberOf ccm.components.ccm_comment
+   * @type {ccm.components.ccm_comment.config}
    */
   config: {
 	key		: 'comment'		,
@@ -34,8 +40,8 @@ ccm.component( {
   /*-------------------------------------------- public component classes --------------------------------------------*/
 
   /**
-   * @summary constructor for creating <i>ccm</i> instances out of this component
-   * @alias ccm.components.blank.Blank
+   * @summary constructor for creating an instance of ccm comment
+   * @alias ccm.components.ccm_comment
    * @class
    */
   Instance: function () {
@@ -44,6 +50,41 @@ ccm.component( {
 	  // --------------------------------------------------------------
 	  // model context
 	  
+	  /**
+	   * @summary constructor for creating <i>ccm</i> instances out of this component
+	   * @alias ccm.components.ccm_comment.Context
+	   * @class
+	   * 
+	   * @param {Object} model - datastructure
+	   * @param {string} path - path that points to an element inside the datastructure
+	   * @param {Object} [context] - Use path of another context to combine with provided path
+	   * 
+	   * @example
+	   * A datastructure is represented as js object. To point to a element inside of it you have to
+	   * provide a path parameter. As an example the following model is provided
+	   * 
+	   * <code>
+	   * var model = {
+	   * 	hello : [
+	   * 		{
+	   * 			world : "World!"
+	   * 		}
+	   * 	]
+	   * }
+	   * </code>
+	   * 
+	   * To get the object that contains world, you write in js
+	   * 
+	   * <code>
+	   * model.hello[0].world
+	   * </code>
+	   * 
+	   * this can also be represented as a path using the following notation
+	   * 
+	   * <code>
+	   * /hello/0/world
+	   * </code>
+	   */
 	  function Context(model, path, context) {
 		  
 		  // make sure path is of type string
@@ -73,23 +114,60 @@ ccm.component( {
 		  this.path		= path;
 	  };
 	  
+	  /**
+	   * Getter for context model
+	   * 
+	   * @memberOf ccm.components.ccm_comment.Context
+	   * @returns {Object}
+	   */
 	  Context.prototype.getModel = function() {
 		  return this.model;
 	  };
 	  
+	  /**
+	   * Getter for path
+	   * 
+	   * @memberOf ccm.components.ccm_comment.Context
+	   * @returns {string}
+	   */
 	  Context.prototype.getPath = function() {
 		  return this.path;
 	  };
 	  
-	  // gibt das gesamte datenset vom angegebenen pfad zurück
+	  /**
+	   * Returns all data available at the provided path
+	   * 
+	   * @memberOf ccm.components.ccm_comment.Context
+	   * 
+	   * @returns {*}
+	   */
 	  Context.prototype.getData = function() {
 		  return this._traverse(this.getPath());
 	  };
 	  
+	  /**
+	   * Returns all data available at the combined path
+	   * and property information.
+	   * 
+	   * @memberOf ccm.components.ccm_comment.Context
+	   * 
+	   * @param {string} property - name of property or subpath
+	   * @returns {*}
+	   */
 	  Context.prototype.getProperty = function(property) {
 		  return this._traverse(this.getPath() + "/" + property);
 	  };
 	  
+	  /**
+	   * Traverses along the path through the model to retrieve the
+	   * data requested.
+	   * 
+	   * @memberOf ccm.components.ccm_comment.Context
+	   * @private
+	   * 
+	   * @param {string} path - path 
+	   * @returns {*}
+	   */
 	  Context.prototype._traverse = function(path) {
 		  
 		  // first make sure to remove the leading slash
@@ -114,7 +192,17 @@ ccm.component( {
 		  return data;
 	  };
 	  
+	  /**
+	   * Removes leading slash from path string
+	   * 
+	   * @memberOf ccm.components.ccm_comment.Context
+	   * @private
+	   * 
+	   * @param {string} path - path 
+	   * @returns {string} path without leading slash
+	   */
 	  Context.prototype._removeLeadingSlash = function(path) {
+		  // if there is a slash at index 0 (first character in string) remove it
 		  if ( path.indexOf("/") === 0 ) {
 			  path = path.substring(1, path.length);
 		  }
@@ -128,8 +216,21 @@ ccm.component( {
      * @private
      */
     var self = this;
+    
+    /**
+     * @summary current localization (countryCode)
+     * @private
+     */
     var currLocalization;
     
+    
+    /**
+     * Called on localization change. Updates the localization of the component
+     * and triggers a rerender.
+     * @private
+     * 
+     * @param {Object} event
+     */
     function onLocalizationSelectionChanged(event) {
     	var countryCode = event.target.value;
     	setLocalization(countryCode);
@@ -137,9 +238,15 @@ ccm.component( {
     	self.render();
     };
     
+    /**
+     * Sets a new localization from localization model
+     * 
+     * @param {string} countryCode - Language encoded as countryCode
+     */
     function setLocalization(countryCode) {
     	
-    	// FIXME save localization
+    	// FIXME workaround to be able to switch between localizations.
+    	// Save a reference to the full localization in self.i18nSave
     	if(!self.i18nSave) {
     		self.i18nSave = self.i18n;
     	}
@@ -149,6 +256,18 @@ ccm.component( {
     	currLocalization 	= countryCode;
     };
     
+    /**
+     * Retrieves the language from browser and converts it into an
+     * internal country code.
+     * 
+     * @example
+     * Country codes available in this component
+     * 
+     * deDE = German - Germany
+     * enEN = English - Great Britain
+     * 
+     * @returns {string} Language represented as countryCode
+     */
     function getBrowserLanguage() {
     	
     	var sLang = (navigator.language || navigator.userLanguage);
@@ -168,11 +287,11 @@ ccm.component( {
     /*------------------------------------------- public instance methods --------------------------------------------*/
 
     /**
-     * @summary initialize <i>ccm</i> instance
+     * @summary initializes a new ccm_comment instance
      * @description
-     * Called one-time when this <i>ccm</i> instance is created, all dependencies are solved and before dependent <i>ccm</i> components, instances and datastores are initialized.
+     * Called one-time when this <i>ccm_comment</i> instance is created, all dependencies are solved and before dependent <i>ccm</i> components, instances and datastores are initialized.
      * This method will be removed by <i>ccm</i> after the one-time call.
-     * @param {function} callback - callback when this instance is initialized
+     * @param {function} callback - callback when this instance is ready
      */
     self.init = function ( callback ) {
     	
@@ -223,6 +342,12 @@ ccm.component( {
 	    callback();
     };
     
+    /**
+     * @summary populates the data storage
+     * @description
+     * Populates the data storage with mockdata if there is no data available. Added for demo purposes.
+     * Was moved to own function as fix for ccm 6.3.0 and above.
+     */
     self.initDatastore = function() {
     	
     	if( !self.bStoreInitialized ) {
@@ -319,6 +444,13 @@ ccm.component( {
 	    	  // ---------------------------------------------------------------------------
 	    	  // PRIVATE
 	    	  
+	    	  /**
+	    	   * Inserts the html template for a "postbox" element after the provided
+	    	   * element. Also binds a data context to the postbox for later usage.
+	    	   * 
+	    	   * @param {Object} element - jQuery html element
+	    	   * @param {ccm.components.ccm_comment.Context} context - Data context pointing to comments
+	    	   */
 	    	  function insertPostboxAfter(element, context) {
 	    		  
 	    		  var postbox_div = insertAfter(element, getTemplate("postbox"), {
@@ -340,6 +472,14 @@ ccm.component( {
 	    		  return postbox_div;
 	    	  };
 	    	  
+	    	  /**
+	    	   * Appends the html template for a comment element after the provided
+	    	   * element. Also binds two context objects to the comment element for later usage.
+	    	   * 
+	    	   * @param {Object} element - jQuery html element
+	    	   * @param {ccm.components.ccm_comment.Context} context - Context element pointing to the comment
+	    	   * @param {ccm.components.ccm_comment.Context} postbox_context - Context element pointing to replies for this comment
+	    	   */
 	    	  function appendComment(element, context, postbox_context) {
 	    		  
 	    		  var comment			= context.getData();
@@ -364,11 +504,15 @@ ccm.component( {
 	    		  return comment_div;
 	    	  };
 	    	  
-	    	  // calculcates the time difference between the given and current date
-	    	  // outputs a string with an appropriate number between
-	    	  //
-	    	  // Used tutorial : http://stackoverflow.com/questions/17732897/difference-between-two-dates-in-years-months-days-in-javascript
-	    	  // from Rajeev P Nadig
+	    	  /**
+	    	   * Calculcates the time difference between the given and current date.
+	    	   * Used tutorial :{@link http://stackoverflow.com/questions/17732897/difference-between-two-dates-in-years-months-days-in-javascript}
+	    	   * from "Rajeev P Nadig"
+	    	   * 
+	    	   * @param {Object} date
+	    	   * @returns {string} - Time difference as localized string in form "10 minutes ago"
+	    	   * 
+	    	   */
 	    	  function convertDateForOutput(date) {
 	    		  
 	    		  var curr		= new Date();
@@ -408,6 +552,13 @@ ccm.component( {
 	    	  };
 	    	  
 	    	  // get html template from json data
+	    	  
+	    	  /**
+	    	   * Component template used for html element generation
+	    	   * 
+	    	   * @param {string} name - Name of the component template
+	    	   * @returns {Object} - Template
+	    	   */
 	    	  function getTemplate(name) {
 	    		  return self.html.component[name];
 	    	  };
@@ -415,6 +566,16 @@ ccm.component( {
 	    	  // --------------------------------------------------------------------
 	    	  // BUSINESS LOGIC
 	    	  
+	    	  /**
+	    	   * @summary Change handler for postbox
+	    	   * @description
+	    	   * Toggles placeholder dependent on the event type. If user clicks into the html element placeholder
+	    	   * is replaced by empty string. If element looses his focus the placeholder is added again if there is
+	    	   * not text in it.
+	    	   * @private
+	    	   * 
+	    	   * @param {Object} event - Event of postbox element
+	    	   */
 	    	  function onPostboxTextareaStateChange(event) {
 	    		  
 	    		  var type = event.type;
@@ -445,9 +606,23 @@ ccm.component( {
 	    	  // ------------------------------------------------------------
 	    	  // --- POSTBOX REPLY
 	    	  
-	    	  // could be put into event but i'm too lazy atm
+	    	  /**
+	    	   * @summary pointer to temporarily added postbox element
+	    	   * @private
+	    	   */
 	    	  var temp_postbox = null;
 	    	  
+	    	  /**
+	    	   * @summary Change handler for comment reply
+	    	   * @description
+	    	   * Inserts a new postbox after the comment to allow for direct input of comment without the need to
+	    	   * scroll up. If a postbox is already open, it gets closed automatically.
+	    	   * @private
+	    	   * 
+	    	   * @param {Object} event - Event of postbox element
+	    	   * @param {Object} element - jQuery html element
+	    	   * @param {ccm.components.ccm_comment.Context} context - Context element pointing to replies for this comment
+	    	   */
 	    	  function onCommentButtonReplyClick(event, element, context) {
 	    		  
 	    		  // close old postbox if one is remaining
@@ -464,10 +639,23 @@ ccm.component( {
 	    		  }
 	    	  };
 	    	  
+	    	  /**
+	    	   * @summary Click handler for comment close button
+	    	   * @description
+	    	   * Closes the temporary postbox added for a reply action
+	    	   * @private
+	    	   * 
+	    	   * @param {Object} event - Event of postbox element
+	    	   * @param {Object} element - jQuery html element
+	    	   * @param {ccm.components.ccm_comment.Context} context - Context element pointing to replies for this comment
+	    	   */
 	    	  function onCommentButtonCloseClick(event, element, context) {
 	    		  closePostbox();
 	    	  };
 	    	  
+	    	  /**
+	    	   * Removes the temporarily added postbox
+	    	   */
 	    	  function closePostbox() {
 	    		  
 	    		  // we can only close temporary postboxes
@@ -485,6 +673,17 @@ ccm.component( {
 	    	  
 	    	  // ------------------------------------------------------------
 	    	  
+	    	  /**
+	    	   * @summary Click handler for postbox submit action
+	    	   * @description
+	    	   * On submit validates the postbox contents. If it's contents are valid triggers a submit. Otherwise
+	    	   * informs the user about the invalid input.
+	    	   * @private
+	    	   * 
+	    	   * @param {Object} event - Event of postbox element
+	    	   * @param {Object} element - jQuery html element
+	    	   * @param {ccm.components.ccm_comment.Context} context - Context element pointing to the location where a comment has to be added
+	    	   */
 	    	  function onPostboxButtonSubmitClick(event, element, context) {
 	    		  
 	    		  var textarea 	= first(element, ".textarea");
@@ -507,6 +706,16 @@ ccm.component( {
 	    		  });
 	    	  };
 	    	  
+	    	  /**
+	    	   * Saves a comment at the provided location in the data storage. If requested a user
+	    	   * can also post with his registered account.
+	    	   * 
+	    	   * @private
+	    	   * 
+	    	   * @param {ccm.components.ccm_comment.Context} context - Context element pointing to the location where a comment has to be added
+	    	   * @param {string} text - Comment text to add
+	    	   * @param {boolean} guest - Post comment anonymous
+	    	   */
 	    	  function post(context, text, guest) {
 	    		  
 	    		  // post if guest or at least logged in
@@ -558,6 +767,11 @@ ccm.component( {
 	    		  }
 	    	  }
 	    	  
+	    	  /**
+	    	   * Checks if a user is logged in
+	    	   * 
+	    	   * @returns {boolean}
+	    	   */
 	    	  function isLoggedIn() {
 	    		  return (self.user.data() !== null);
 	    	  };
@@ -566,16 +780,38 @@ ccm.component( {
 	    	  // UTILS
 	    	  
 	    	  // Konvertiert ein ISO Datum zu einem regulären DAtum
+	    	  /**
+	    	   * Converts a iso date into a js date
+	    	   * 
+	    	   * @param {Number} isodate - Date in ISO notation
+	    	   * @returns {Object} - js date
+	    	   */
 	    	  function convertISODateToDate(isodate) {
 	    		  return new Date(isodate);
 	    	  };
 	    	  
 	    	  // html selektoren
 	    	  
+	    	  /**
+	    	   * Wrapper for jquery find and selecting the first element
+	    	   * 
+	    	   * @param {Object} element - jQuery html element
+	    	   * @param {string} selector - Selector string matching html element properties
+	    	   * 
+	    	   * @returns {Object} - jQuery html element
+	    	   */
 	    	  function first(element, selector) {
 	    		  return find(element, selector).first();
 	    	  };
 	    	  
+	    	  /**
+	    	   * Wrapper for jquery element find
+	    	   * 
+	    	   * @param {Object} element - jQuery html element
+	    	   * @param {string} selector - Selector string matching html element properties
+	    	   * 
+	    	   * @returns {array} - Array of jQuery html elements
+	    	   */
 	    	  function find(element, selector) {
 	    		  return $(element).find(selector);
 	    	  };
@@ -583,26 +819,82 @@ ccm.component( {
 	    	  // --------------------------------------------------------------
 	    	  // html operationen
 	    	  
+	    	  /**
+	    	   * Replaces the current html element with the newly created one
+	    	   * 
+	    	   * @param {Object} element - jQuery html element
+	    	   * @param {Object} template - Template of the html element
+	    	   * @param {string} data - Data to bind to template
+	    	   * 
+	    	   * @returns {Object} html - jQuery html element
+	    	   */
 	    	  function set(element, template, data) {
 	    		  return _add(element, "html", template, data);
 	    	  };
 	    	  
+	    	  /**
+	    	   * Creates and appends the html element
+	    	   * 
+	    	   * @param {Object} element - jQuery html element
+	    	   * @param {Object} template - Template of the html element
+	    	   * @param {string} data - Data to bind to template
+	    	   * 
+	    	   * @returns {Object} html - jQuery html element
+	    	   */
 	    	  function append(element, template, data) {
 	    		  return _add(element, "append", template, data);
 	    	  };
 	    	  
+	    	  /**
+	    	   * Creates and prepends the html element
+	    	   * 
+	    	   * @param {Object} element - jQuery html element
+	    	   * @param {Object} template - Template of the html element
+	    	   * @param {string} data - Data to bind to template
+	    	   * 
+	    	   * @returns {Object} html - jQuery html element
+	    	   */
 	    	  function prepend(element, template, data, fnCallback) {
 	    		  return _add(element, "prepend", template, data);
 	    	  };
 	    	  
+	    	  /**
+	    	   * Creates and insert the html element after the one provided
+	    	   * 
+	    	   * @param {Object} element - jQuery html element
+	    	   * @param {Object} template - Template of the html element
+	    	   * @param {string} data - Data to bind to template
+	    	   * 
+	    	   * @returns {Object} html - jQuery html element
+	    	   */
 	    	  function insertAfter(element, template, data) {
 	    		  return _add(element, "after", template, data);
 	    	  };
 	    	  
+	    	  /**
+	    	   * Creates and insert the html element before the one provided
+	    	   * 
+	    	   * @param {Object} element - jQuery html element
+	    	   * @param {Object} template - Template of the html element
+	    	   * @param {string} data - Data to bind to template
+	    	   * 
+	    	   * @returns {Object} html - jQuery html element
+	    	   */
 	    	  function insertBefore(element, template, data) {
 	    		  return _add(element, "before", template, data);
 	    	  };
 	    	  
+	    	  /**
+	    	   * Creates a new html element and inserts it after an
+	    	   * existing.
+	    	   * 
+	    	   * @param {Object} element - jQuery html element
+	    	   * @param {string} operation - jQuery operation to execute on element
+	    	   * @param {Object} template - Template to generate with ccm.helper.html
+	    	   * @param {string} data - Data to bind to template
+	    	   * 
+	    	   * @returns {Object} html - jQuery html element
+	    	   */
 	    	  function _add(element, operation, template, data) {
 	    		  var html = ccm.helper.html(template, data)
 	    		  $(element)[operation](html);
@@ -616,26 +908,19 @@ ccm.component( {
   /* ------------------------------------------------ type definitions ------------------------------------------------*/
 
   /**
-   * @namespace ccm.components.comment
+   * @namespace ccm.components.ccm_comment
    */
 
   /**
    * @summary <i>ccm</i> instance configuration
    * @typedef {ccm.config} ccm.components.blank.config
-   * @property {string} classes - css classes for own website area
-   * @property {ccm.element} element - own website area
-   * @property {Object.<ccm.key, ccm.html>} html - <i>ccm</i> html data templates for own content
-   * @property {ccm.key} key - key of [blank dataset]{@link ccm.components.blank.dataset} for rendering
-   * @property {ccm.store} store - <i>ccm</i> datastore that contains the [blank dataset]{@link ccm.components.blank.dataset} for rendering
-   * @property {ccm.style} style - css for own content
-   * ...
-   */
-
-  /**
-   * @summary blank dataset for rendering
-   * @typedef {ccm.dataset} ccm.components.blank.dataset
-   * @property {ccm.key} key - dataset key
-   * ...
+   * @property {string} key - Key used for ccm.store initialization
+   * @property {Object} html - <i>ccm</i> html data templates for own content
+   * @property {Object} mock - Mockdata used for ccm.store initialization
+   * @property {Object} i18n - Localization 
+   * @property {ccm.style} style - css classes used in ccm_comment
+   * @property {ccm.store} store - datastore that contains all comments for display
+   * @property {ccm.instance} user - userstore for retrieval of user related data
    */
 
 } );
