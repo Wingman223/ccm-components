@@ -1,10 +1,10 @@
 /**
- * @overview 	Comment component written for the <i>ccm</i> framework during master course web engineering 2016
- * 				at Bonn-Rhein-Sieg University. Also see {@link http://akless.github.io/ccm-developer/api/ccm/index.html}
- * 				for a detailed documentation about the <i>ccm</i> framework.
+ * @overview Comment component written for the <i>ccm</i> framework during master course web engineering 2016
+ * at Bonn-Rhein-Sieg University. Also see {@link http://akless.github.io/ccm-developer/api/ccm/index.html}
+ * for a detailed documentation about the <i>ccm</i> framework.
  * 
- * 				Offers the possibility to add and reply to comments. Can be embedded in any site to be used alongside
- * 				other components (approach to componentize the web).
+ * Offers the possibility to add and reply to comments. Can be embedded in any site to be used alongside other
+ * components (approach to componentize the web).
  * 
  * @author 		Patrick Reif <patrick.reif@inf.h-brs.de>
  * @copyright 	Copyright (c) 2016 Bonn-Rhein-Sieg University of Applied Sciences
@@ -63,7 +63,6 @@ ccm.component( {
 	   * A datastructure is represented as js object. To point to a element inside of it you have to
 	   * provide a path parameter. As an example the following model is provided
 	   * 
-	   * <code>
 	   * var model = {
 	   * 	hello : [
 	   * 		{
@@ -71,19 +70,14 @@ ccm.component( {
 	   * 		}
 	   * 	]
 	   * }
-	   * </code>
 	   * 
 	   * To get the object that contains world, you write in js
 	   * 
-	   * <code>
 	   * model.hello[0].world
-	   * </code>
 	   * 
 	   * this can also be represented as a path using the following notation
 	   * 
-	   * <code>
 	   * /hello/0/world
-	   * </code>
 	   */
 	  function Context(model, path, context) {
 		  
@@ -292,6 +286,7 @@ ccm.component( {
      * Called one-time when this <i>ccm_comment</i> instance is created, all dependencies are solved and before dependent <i>ccm</i> components, instances and datastores are initialized.
      * This method will be removed by <i>ccm</i> after the one-time call.
      * @param {function} callback - callback when this instance is ready
+     * @memberOf ccm.components.ccm_comment
      */
     self.init = function ( callback ) {
     	
@@ -334,6 +329,7 @@ ccm.component( {
      * Called one-time when this <i>ccm</i> instance and dependent <i>ccm</i> components, instances and datastores are initialized and ready.
      * This method will be removed by <i>ccm</i> after the one-time call.
      * @param {function} callback - callback when this instance is ready
+     * @memberOf ccm.components.ccm_comment
      */
     self.ready = function ( callback ) {
     	
@@ -347,6 +343,7 @@ ccm.component( {
      * @description
      * Populates the data storage with mockdata if there is no data available. Added for demo purposes.
      * Was moved to own function as fix for ccm 6.3.0 and above.
+     * @memberOf ccm.components.ccm_comment
      */
     self.initDatastore = function() {
     	
@@ -369,6 +366,7 @@ ccm.component( {
     /**
      * @summary render content in own website area
      * @param {function} [callback] - callback when content is rendered
+     * @memberOf ccm.components.ccm_comment
      */
     self.render = function ( callback ) {
     	
@@ -447,6 +445,7 @@ ccm.component( {
 	    	  /**
 	    	   * Inserts the html template for a "postbox" element after the provided
 	    	   * element. Also binds a data context to the postbox for later usage.
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * 
 	    	   * @param {Object} element - jQuery html element
 	    	   * @param {ccm.components.ccm_comment.Context} context - Data context pointing to comments
@@ -475,6 +474,7 @@ ccm.component( {
 	    	  /**
 	    	   * Appends the html template for a comment element after the provided
 	    	   * element. Also binds two context objects to the comment element for later usage.
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * 
 	    	   * @param {Object} element - jQuery html element
 	    	   * @param {ccm.components.ccm_comment.Context} context - Context element pointing to the comment
@@ -508,6 +508,7 @@ ccm.component( {
 	    	   * Calculcates the time difference between the given and current date.
 	    	   * Used tutorial :{@link http://stackoverflow.com/questions/17732897/difference-between-two-dates-in-years-months-days-in-javascript}
 	    	   * from "Rajeev P Nadig"
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * 
 	    	   * @param {Object} date
 	    	   * @returns {string} - Time difference as localized string in form "10 minutes ago"
@@ -555,6 +556,7 @@ ccm.component( {
 	    	  
 	    	  /**
 	    	   * Component template used for html element generation
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * 
 	    	   * @param {string} name - Name of the component template
 	    	   * @returns {Object} - Template
@@ -572,6 +574,7 @@ ccm.component( {
 	    	   * Toggles placeholder dependent on the event type. If user clicks into the html element placeholder
 	    	   * is replaced by empty string. If element looses his focus the placeholder is added again if there is
 	    	   * not text in it.
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * @private
 	    	   * 
 	    	   * @param {Object} event - Event of postbox element
@@ -608,6 +611,7 @@ ccm.component( {
 	    	  
 	    	  /**
 	    	   * @summary pointer to temporarily added postbox element
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * @private
 	    	   */
 	    	  var temp_postbox = null;
@@ -617,6 +621,7 @@ ccm.component( {
 	    	   * @description
 	    	   * Inserts a new postbox after the comment to allow for direct input of comment without the need to
 	    	   * scroll up. If a postbox is already open, it gets closed automatically.
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * @private
 	    	   * 
 	    	   * @param {Object} event - Event of postbox element
@@ -643,6 +648,7 @@ ccm.component( {
 	    	   * @summary Click handler for comment close button
 	    	   * @description
 	    	   * Closes the temporary postbox added for a reply action
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * @private
 	    	   * 
 	    	   * @param {Object} event - Event of postbox element
@@ -655,6 +661,7 @@ ccm.component( {
 	    	  
 	    	  /**
 	    	   * Removes the temporarily added postbox
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   */
 	    	  function closePostbox() {
 	    		  
@@ -678,6 +685,7 @@ ccm.component( {
 	    	   * @description
 	    	   * On submit validates the postbox contents. If it's contents are valid triggers a submit. Otherwise
 	    	   * informs the user about the invalid input.
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * @private
 	    	   * 
 	    	   * @param {Object} event - Event of postbox element
@@ -709,7 +717,7 @@ ccm.component( {
 	    	  /**
 	    	   * Saves a comment at the provided location in the data storage. If requested a user
 	    	   * can also post with his registered account.
-	    	   * 
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * @private
 	    	   * 
 	    	   * @param {ccm.components.ccm_comment.Context} context - Context element pointing to the location where a comment has to be added
@@ -769,6 +777,7 @@ ccm.component( {
 	    	  
 	    	  /**
 	    	   * Checks if a user is logged in
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * 
 	    	   * @returns {boolean}
 	    	   */
@@ -782,6 +791,7 @@ ccm.component( {
 	    	  // Konvertiert ein ISO Datum zu einem regulären DAtum
 	    	  /**
 	    	   * Converts a iso date into a js date
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * 
 	    	   * @param {Number} isodate - Date in ISO notation
 	    	   * @returns {Object} - js date
@@ -794,6 +804,7 @@ ccm.component( {
 	    	  
 	    	  /**
 	    	   * Wrapper for jquery find and selecting the first element
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * 
 	    	   * @param {Object} element - jQuery html element
 	    	   * @param {string} selector - Selector string matching html element properties
@@ -806,6 +817,7 @@ ccm.component( {
 	    	  
 	    	  /**
 	    	   * Wrapper for jquery element find
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * 
 	    	   * @param {Object} element - jQuery html element
 	    	   * @param {string} selector - Selector string matching html element properties
@@ -821,6 +833,7 @@ ccm.component( {
 	    	  
 	    	  /**
 	    	   * Replaces the current html element with the newly created one
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * 
 	    	   * @param {Object} element - jQuery html element
 	    	   * @param {Object} template - Template of the html element
@@ -834,6 +847,7 @@ ccm.component( {
 	    	  
 	    	  /**
 	    	   * Creates and appends the html element
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * 
 	    	   * @param {Object} element - jQuery html element
 	    	   * @param {Object} template - Template of the html element
@@ -847,6 +861,7 @@ ccm.component( {
 	    	  
 	    	  /**
 	    	   * Creates and prepends the html element
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * 
 	    	   * @param {Object} element - jQuery html element
 	    	   * @param {Object} template - Template of the html element
@@ -860,6 +875,7 @@ ccm.component( {
 	    	  
 	    	  /**
 	    	   * Creates and insert the html element after the one provided
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * 
 	    	   * @param {Object} element - jQuery html element
 	    	   * @param {Object} template - Template of the html element
@@ -873,6 +889,7 @@ ccm.component( {
 	    	  
 	    	  /**
 	    	   * Creates and insert the html element before the one provided
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * 
 	    	   * @param {Object} element - jQuery html element
 	    	   * @param {Object} template - Template of the html element
@@ -887,6 +904,7 @@ ccm.component( {
 	    	  /**
 	    	   * Creates a new html element and inserts it after an
 	    	   * existing.
+	    	   * @memberOf ccm.components.ccm_comment
 	    	   * 
 	    	   * @param {Object} element - jQuery html element
 	    	   * @param {string} operation - jQuery operation to execute on element
@@ -913,7 +931,8 @@ ccm.component( {
 
   /**
    * @summary <i>ccm</i> instance configuration
-   * @typedef {ccm.config} ccm.components.blank.config
+   * 
+   * @typedef {ccm.config} ccm.components.ccm_comment.config
    * @property {string} key - Key used for ccm.store initialization
    * @property {Object} html - <i>ccm</i> html data templates for own content
    * @property {Object} mock - Mockdata used for ccm.store initialization
